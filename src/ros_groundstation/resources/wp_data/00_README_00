@@ -1,0 +1,5 @@
+the main_wps folder contains waypoints given by the competition
+
+the search_wps folder contains waypoints for the sweeping search
+
+you must follow the file naming convention of [MAP NAME]_main_wps.txt or [MAP NAME]_search_wps.txt

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+  <class>MapWindow</class>
+  <widget class="QWidget" name="MapWindow">
+    <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="margin">
+        <number>0</number>
+      </property>
+      <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+            <number>0</number>
+          </property>
+          <item>
+            <widget class="QComboBox" name="_home_opts">
+              <property name="minimumSize">
+                <size>
+                  <width>250</width>
+                  <height>0</height>
+                </size>
+              </property>
+              <property name="toolTip">
+                <string>Where the map will be centered.</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </item>
+      <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+            <widget class="QCheckBox" name="_pathviewer_toggle">
+              <property name="maximumSize">
+                <size>
+                  <width>30</width>
+                  <height>10000</height>
+                </size>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QLabel" name="_toggle_label">
+              <property name="text">
+                <string>Path Viewer Mode</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QPushButton" name="_map_options">
+              <property name="maximumSize">
+                <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                </size>
+              </property>
+              <property name="text">
+                <string>OPTIONS</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QPushButton" name="_manage_KML">
+              <property name="maximumSize">
+                <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                </size>
+              </property>
+              <property name="text">
+                <string>Manage KML Files</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QPushButton" name="_send_WP">
+              <property name="maximumSize">
+                <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                </size>
+              </property>
+              <property name="text">
+                <string>Handle Waypoints</string>
+              </property>
+            </widget>
+          </item>
+          <item>
+            <widget class="QPushButton" name="_special_commands">
+              <property name="maximumSize">
+                <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                </size>
+              </property>
+              <property name="text">
+                <string>Send Commands</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </item>
+      <!--<item>
+        <widget class="MarbleMap" name="_marble_map">
+          <property name="toolTip">
+            <string>Keep an eye on your plane!</string>
+          </property>
+        </widget>
+      </item>-->
+    </layout>
+  </widget>
+  <!--<customwidgets>
+
+    <customwidget>
+      <class>MarbleMap</class>
+      <extends>QWidget</extends>
+      <header>ros_groundstation.map_widget</header>
+    </customwidget>
+
+  </customwidgets>-->
+  <resources/>
+  <connections/>
+</ui>

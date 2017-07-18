@@ -1,0 +1,45 @@
+<maps default="Brigham Young University">
+	<!--
+    <map name="Map Name For Menu">
+        <lat>Latitude Float (N+, S-)</lat>
+        <lon>Longitude Float (E+, W-)</lon>
+        <zoom>How Much Map Zooms (int)</zoom>
+    </map>
+    -->
+	<map name="Brigham Young University">
+		<lat>40.2518</lat>
+		<lon>-111.6493</lon>
+		<zoom>17</zoom>
+		<radius_m>1000</radius_m>
+	</map>
+	<map name="Elberta">
+		<lat>39.9764</lat>
+		<lon>-111.9582</lon>
+		<zoom>20</zoom>
+		<radius_m>1000</radius_m>
+	</map>
+	<map name="Kawasaki Field">
+		<lat>40.174571</lat>
+		<lon>-111.651641</lon>
+		<zoom>20</zoom>
+		<radius_m>1000</radius_m>
+	</map>
+	<map name="Naval Base Competition">
+		<lat>38.146191</lat>
+		<lon>-76.429454</lon>
+		<zoom>19</zoom>
+		<radius_m>1000</radius_m>
+	</map>
+	<map name="Utah County Airfield">
+		<lat>40.3634</lat>
+		<lon>-111.9019</lon>
+		<zoom>20</zoom>
+		<radius_m>1000</radius_m>
+	</map>
+	<map name="Rock Canyon Park">
+		<lat>40.2678966681</lat>
+		<lon>-111.634524573</lon>
+		<zoom>20</zoom>
+		<radius_m>1000</radius_m>
+	</map>
+</maps>

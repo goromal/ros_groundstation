@@ -1,0 +1,3 @@
+Any .kml files placed in this directory will automatically be applied to the map in the Ground Station.
+
+Another reason we wrote this README was so that git would save this directory (it doesn't save empty directories).

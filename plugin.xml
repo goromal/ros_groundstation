@@ -1,0 +1,17 @@
+<library path="src">
+  <class name="GroundStation" type="ros_groundstation.gs_plugin.GroundStationPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+    Ground station for planes running ros_plane.
+    </description>
+    <qtgui>
+      <group>
+        <label>AUVSI</label>
+        <icon type="theme">folder</icon>
+        <statustip>Plugins related to the AUVSI competition.</statustip>
+      </group>
+      <label>AUVSI Ground Station</label>
+      <icon type="theme">video-display</icon>
+      <statustip>Ground Station</statustip>
+    </qtgui>
+  </class>
+</library>
