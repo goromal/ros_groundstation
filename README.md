@@ -1,4 +1,4 @@
-ground_station
+ROSgroundstation
 =============
 
-RQT plugin to interact with a plane running BYU Magicc's ros_plane autopilot.
+
