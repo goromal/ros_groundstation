@@ -90,6 +90,9 @@ class MarbleMap(QWidget):
                     self.GMP.UpdateView(lat_incremented, lon_incremented)
                     self.mouse_event_counter = 0
 
+    def recenter(self):
+        self.GMP.UpdateView(self.latlon[0], self.latlon[1])
+
     def enterEvent(self, QEvent):
         if self._mouse_attentive:
             self.setCursor(QCursor(Qt.CrossCursor))

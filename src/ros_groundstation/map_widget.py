@@ -5,7 +5,7 @@ from python_qt_binding.QtWidgets import QWidget
 from .marble_map import MarbleMap
 from .op_window import OpWindow
 from .wp_window import WpWindow
-from .cm_window import CmWindow
+#from .cm_window import CmWindow
 import map_info_parser
 import os
 
@@ -36,7 +36,8 @@ class MapWindow(QWidget):
         #self.init_manage_kml()
         self.init_op_window()
         self.init_wp_window()
-        self.init_cm_window()
+        #self.init_cm_window()
+        self._recenter.clicked.connect(self._marble_map.recenter)
 
     def init_manage_kml(self):
         self.manageKML = ManageKML(self._marble_map)
@@ -50,11 +51,11 @@ class MapWindow(QWidget):
     def init_wp_window(self):
         self.wpWindow = WpWindow(self._marble_map)
         self._send_WP.clicked.connect(self.open_wp_window)
-
+    '''
     def init_cm_window(self):
         self.cmWindow = CmWindow(self._marble_map)
         self._special_commands.clicked.connect(self.open_cm_window)
-
+    '''
     def open_op_window(self):
         self.opWindow.show()
 

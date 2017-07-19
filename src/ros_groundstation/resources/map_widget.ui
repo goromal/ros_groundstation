@@ -85,7 +85,7 @@
             </widget>
           </item>
           <item>
-            <widget class="QPushButton" name="_special_commands">
+            <widget class="QPushButton" name="_recenter">
               <property name="maximumSize">
                 <size>
                   <width>150</width>
@@ -93,7 +93,7 @@
                 </size>
               </property>
               <property name="text">
-                <string>Send Commands</string>
+                <string>Recenter Map</string>
               </property>
             </widget>
           </item>
