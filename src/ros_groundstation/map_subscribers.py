@@ -1,13 +1,15 @@
 import rospy
-from std_msgs.msg import String, Float32MultiArray
-from rosflight_msgs.msg import State, GPS, RCRaw
-from ros_plane.msg import Current_Path, Waypoint
+from std_msgs.msg import String, Float32MultiArray #(?)
 import json, re
 from .Geo import Geobase
-
 from math import fmod, pi
 
-class InitSub():
+# custom messages
+from rosflight_msgs.msg import State, GPS, RCRaw
+#from rosplane_msgs.msg import Current_Path, Waypoint #, State?
+from ros_plane.msg import Current_Path, Waypoint # FOR TESTING ONLY ---------------
+
+class InitSub(): # could end up being taken from rosplane_msgs.msg: State
     init_latlonalt = [0.0, 0.0, 0.0]
     with_init = False
     enabled = False
@@ -190,7 +192,7 @@ class renderable_wp():
         self.lat = lat
         self.lon = lon
         self.alt = alt
-        self.chi_d = chi_d
+        self.chi_d = chi_d # radians
         self.chi_valid = chi_valid
         self.Va_d = Va_d
         self.converted = converted

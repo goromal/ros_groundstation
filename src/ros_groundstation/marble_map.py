@@ -158,8 +158,17 @@ class MarbleMap(QWidget):
         painter.end()
 
     # paint using self.GMP.center and self.GMP.lat/lon_to_pix_coefficient
-    def draw_waypoints(self, painter): # +++++++++++++++++++++++++++++++++++
-        pass
+    def draw_waypoints(self, painter):
+        painter.setPen(QPen(QBrush(Qt.darkRed), 2.5, Qt.SolidLine, Qt.RoundCap))
+        # it can be assumed that all waypoints are converted to latlon if the sub is enabled
+        for waypoint in WaypointSub.waypoints:
+            x = self.lon_to_pix(waypoint.lon)
+            y = self.lat_to_pix(waypoint.lat)
+            if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
+                rad = 5
+                painter.drawEllipse(x-rad, y-rad, 2*rad, 2*rad)
+                if waypoint.chi_valid:
+                    painter.drawLine(x, y, x+2*rad*sin(waypoint.chi_d), y-2*rad*cos(waypoint.chi_d))
 
     def draw_obstacles(self, painter):
         pass # ++++++++++++++++++++++++++++++++++++++++++
