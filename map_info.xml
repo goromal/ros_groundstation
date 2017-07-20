@@ -6,7 +6,7 @@
         <zoom>How Much Map Zooms (int)</zoom>
     </map>
     -->
-	<map name="Brigham Young University">
+	<!--<map name="Brigham Young University">
 		<lat>40.2518</lat>
 		<lon>-111.6493</lon>
 		<zoom>18</zoom>
@@ -35,7 +35,7 @@
 		<lon>-111.9019</lon>
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
-	</map>
+	</map>-->
 	<map name="Rock Canyon Park">
 		<lat>40.2678966681</lat>
 		<lon>-111.634524573</lon>
