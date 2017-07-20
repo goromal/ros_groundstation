@@ -1,6 +1,0 @@
-[submodule "rosflight"]
-	path = rosflight
-	url = https://github.com/rosflight/rosflight.git
-[submodule "rosplane"]
-	path = rosplane
-	url = https://github.com/byu-magicc/rosplane.git
