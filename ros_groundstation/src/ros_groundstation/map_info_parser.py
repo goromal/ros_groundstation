@@ -26,7 +26,6 @@ def get_gps_dict():
         lon = float(str(xmlnode.find('lon').text))
         zoom = int(str(xmlnode.find('zoom').text))
         gps_dict[name] = [[lat, lon], zoom]
-    #gps_dict['-- BLANK --'] = [[0.0,0.0],18]
     return gps_dict
 
 def get_typed_waypoints(map_name, folder_name):

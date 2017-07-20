@@ -39,14 +39,16 @@ class MapZoomObj():
         self.max_latlon = LatLon(max_lat, max_lon)
 
 class GoogleMapPlotter():
-    def __init__(self, mapdict, width, height, mapname):
+    def __init__(self, mapdict, width, height, mapname, blankname):
         # grab all info objects, all at once
         self.mapname = mapname
+        self.blankname = blankname
         self.mapdict = mapdict
         self.mz_objs = defaultdict(dict)
         for mapname in list(self.mapdict.keys()):
-            for zoom in zooms:
-                self.mz_objs[mapname][zoom] = MapZoomObj(mapname, zoom)
+            if not mapname == self.blankname:
+                for zoom in zooms:
+                    self.mz_objs[mapname][zoom] = MapZoomObj(mapname, zoom)
 
         # grab objects for rendering
         self.width = width
@@ -85,7 +87,6 @@ class GoogleMapPlotter():
     def UpdateZoom(self, zoom_increment):
         self.zoom_index = self.sat(self.zoom_index + zoom_increment, 0, len(zooms) - 1)
         self.zoom = zooms[self.zoom_index]
-        self.mz_obj = self.mz_objs[self.mapname][self.zoom]
         self.fetch_and_update()
 
     def UpdateMap(self, mapname):
@@ -93,13 +94,16 @@ class GoogleMapPlotter():
         self.center.lat = self.mapdict[self.mapname][0][0]
         self.center.lon = self.mapdict[self.mapname][0][1]
         self.zoom = self.mapdict[self.mapname][1]
-        self.mz_obj = self.mz_objs[self.mapname][self.zoom]
         self.fetch_and_update()
 
     def fetch_and_update(self):
         self.compute_region()
-        self.fetch()
-        self.update()
+        if self.mapname == self.blankname:
+            self.blank_update()
+        else:
+            self.mz_obj = self.mz_objs[self.mapname][self.zoom]
+            self.fetch()
+            self.update()
 
     @staticmethod
     def pix_to_rel_lon(centerlon, pix, zoom): # positive pix = right
@@ -136,6 +140,12 @@ class GoogleMapPlotter():
         painter.fillRect(QRect(0, 0, self.width, self.height), Qt.black)
         painter.end()
         self.paste(self.window_img, self.img, -self.x_offset, -self.y_offset)
+
+    def blank_update(self):
+        painter = QPainter()
+        painter.begin(self.window_img)
+        painter.fillRect(QRect(0, 0, self.width, self.height), Qt.lightGray)
+        painter.end()
 
     def new_image(self, width, height):
         # Format Value 4 corresponds to QImage.Format_RGB32
