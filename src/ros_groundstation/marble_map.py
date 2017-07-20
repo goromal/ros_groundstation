@@ -9,45 +9,23 @@ from math import sin, cos, radians
 
 import map_info_parser
 from Signals import WP_Handler
-from .Geo import Geobase #--??--
+from .Geo import Geobase
 from .map_subscribers import *
 
 class MarbleMap(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, gps_dict, blankname, parent=None):
         super(MarbleMap, self).__init__() # QWidget constructor
         self.WPH = WP_Handler()
-        self.wp_opts = {'None':{'title_substr':'Empty Mode','folder_name':'','is_rrt':False},
-                        'MainWP':{'title_substr':'Main Waypoints','folder_name':'main_wps','is_rrt':False},
-                        'PathWP':{'title_substr':'Path Waypoints','folder_name':'path_wps','is_rrt':False},
-                        'SearchWP':{'title_substr':'Search Waypoints','folder_name':'search_wps','is_rrt':False},
-                        'RRT_PathWP':{'title_substr':'RRT Path Waypoints','folder_name':'rrt_path_wps','is_rrt':True,'parent':'PathWP','needs_render':True},
-                        'RRT_SearchWP':{'title_substr':'RRT Search Waypoints','folder_name':'rrt_search_wps','is_rrt':True,'parent':'SearchWP','needs_render':True},
-                        'DropWP':{'title_substr':'Bottle Drop Waypoints','folder_name':'drop_wps','is_rrt':False},
-                        'HikerWP':{'title_substr':'Hiker Waypoints','folder_name':'hiker_wps','is_rrt':False}}
-        self.wp_state = 'None' # can be 'None','MainWP','PathWP','SearchWP',
-                               #        'DropWP','TargetWP','HikerWP'
-        # For waypoint conversion
-        self._home_map = map_info_parser.get_default()
 
-        self._gps_dict = map_info_parser.get_gps_dict()
-
-        self.latlon = self._gps_dict[self._home_map][0]
-        self.latlonalt = [self.latlon[0], self.latlon[1], 0.0] # FOR INTERFACING WITH SUBSCRIBERS
-        self.zoom = self._gps_dict[self._home_map][1]
+        self._gps_dict = gps_dict
+        self.blankname = blankname
         self.get_size()
-        self.GMP = GoogleMapPlotter(self._gps_dict, self.w_width, self.w_height, self._home_map)
-
-        self.update() # is this all I need, theoretically? or do I need to overload it?
+        self.GMP = None
+        self.change_home(map_info_parser.get_default())
 
         self.GB = Geobase(self.latlon[0], self.latlon[1]) # For full current path drawer
         self._mouse_attentive = False
         self.movement_offset = QPoint(0,0)
-
-        self.seconds_tests = [2.0/3600, 5.0/3600, 15.0/3600, 30.0/3600, 60.0/3600]
-        self.num_s_tests = len(self.seconds_tests)
-
-        self.view_full_path = False
-        self.current_path_NE_list = []
 
         self.mouse_event_counter = 0
         self.counter_limit = 4
@@ -62,6 +40,21 @@ class MarbleMap(QWidget):
 
         self.draw_gridlines = False
         self.grid_dist = 20 # meters
+
+    def change_home(self, map_name):
+        self._home_map = map_name
+        self.latlon = self._gps_dict[self._home_map][0]
+        self.latlonalt = [self.latlon[0], self.latlon[1], 0.0] # FOR INTERFACING WITH SUBSCRIBERS
+        if not InitSub.with_init:
+            InitSub.updateInitLatLonAlt(self.latlonalt)
+        self.zoom = self._gps_dict[self._home_map][1]
+        self.GB = Geobase(self.latlon[0], self.latlon[1])
+        if self.GMP is None:
+            self.GMP = GoogleMapPlotter(self._gps_dict, self.w_width, self.w_height, self._home_map, self.blankname)
+        else:
+            self.GMP.UpdateMap(map_name)
+        self.update()
+        self.WPH.emit_home_change(self._home_map)
 
     def get_size(self):
         frame_size = self.frameSize()
@@ -124,24 +117,6 @@ class MarbleMap(QWidget):
         else:
             self.draw_gridlines = False
 
-    def path_viewer_toggle(self, state_integer):
-        if state_integer == 2: # checkbox checked
-            self.view_full_path = True
-        else: # checkbox unchecked
-            self.view_full_path = False
-
-    def change_home(self, map_name):
-        self._home_map = map_name
-        self.latlon = self._gps_dict[self._home_map][0]
-        self.latlonalt = [self.latlon[0], self.latlon[1], 0.0] # FOR INTERFACING WITH SUBSCRIBERS
-        if not InitSub.with_init:
-            InitSub.updateInitLatLonAlt(self.latlonalt)
-        self.zoom = self._gps_dict[self._home_map][1]
-        self.GB = Geobase(self.latlon[0], self.latlon[1])
-        self.GMP.UpdateMap(map_name)
-        self.update()
-        self.WPH.emit_home_change(self._home_map)
-
     # =====================================================
     # ==================== FOR DRAWING ====================
     # =====================================================
@@ -154,13 +129,12 @@ class MarbleMap(QWidget):
         upper_left = QPoint(0, 0)
         painter.drawImage(upper_left, self.GMP.GetImage())
 
+        if self.draw_gridlines:
+            self.draw_grid(painter)
         # Draw center crosshairs (probably temporary until smartzoom feature is implemented)
         painter.setPen(QPen(QBrush(Qt.blue), 2, Qt.SolidLine, Qt.RoundCap))
         painter.drawLine(self.GMP.width/2, self.GMP.height/2-8, self.GMP.width/2, self.GMP.height/2+8)
         painter.drawLine(self.GMP.width/2-8, self.GMP.height/2, self.GMP.width/2+8, self.GMP.height/2)
-
-        if self.draw_gridlines:
-            self.draw_grid(painter)
         if WaypointSub.enabled:
             self.draw_waypoints(painter)
         if ObstacleSub.enabled:

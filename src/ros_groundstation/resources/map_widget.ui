@@ -46,23 +46,6 @@
             </widget>
           </item>
           <item>
-            <widget class="QCheckBox" name="_pathviewer_toggle">
-              <property name="maximumSize">
-                <size>
-                  <width>30</width>
-                  <height>10000</height>
-                </size>
-              </property>
-            </widget>
-          </item>
-          <item>
-            <widget class="QLabel" name="_toggle_label">
-              <property name="text">
-                <string>Path Viewer Mode</string>
-              </property>
-            </widget>
-          </item>
-          <item>
             <widget class="QPushButton" name="_map_options">
               <property name="maximumSize">
                 <size>
@@ -72,32 +55,6 @@
               </property>
               <property name="text">
                 <string>OPTIONS</string>
-              </property>
-            </widget>
-          </item>
-          <item>
-            <widget class="QPushButton" name="_manage_KML">
-              <property name="maximumSize">
-                <size>
-                  <width>150</width>
-                  <height>16777215</height>
-                </size>
-              </property>
-              <property name="text">
-                <string>Manage KML Files</string>
-              </property>
-            </widget>
-          </item>
-          <item>
-            <widget class="QPushButton" name="_send_WP">
-              <property name="maximumSize">
-                <size>
-                  <width>150</width>
-                  <height>16777215</height>
-                </size>
-              </property>
-              <property name="text">
-                <string>Handle Waypoints</string>
               </property>
             </widget>
           </item>
@@ -116,24 +73,8 @@
           </item>
         </layout>
       </item>
-      <!--<item>
-        <widget class="MarbleMap" name="_marble_map">
-          <property name="toolTip">
-            <string>Keep an eye on your plane!</string>
-          </property>
-        </widget>
-      </item>-->
     </layout>
   </widget>
-  <!--<customwidgets>
-
-    <customwidget>
-      <class>MarbleMap</class>
-      <extends>QWidget</extends>
-      <header>ros_groundstation.map_widget</header>
-    </customwidget>
-
-  </customwidgets>-->
   <resources/>
   <connections/>
 </ui>

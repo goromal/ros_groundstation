@@ -5,8 +5,8 @@ QString = type("")
 
 import os, rospy
 
-from resources.option_defaults import NED_with_GPS_defaults as NwG
-from resources.option_defaults import misc_defaults as MD
+from .option_defaults import NED_with_GPS_defaults as NwG
+from .option_defaults import misc_defaults as MD
 from .map_subscribers import *
 
 PWD = os.path.dirname(os.path.abspath(__file__))

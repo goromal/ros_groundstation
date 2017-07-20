@@ -1,11 +1,8 @@
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
 
-#from .manage_kml import ManageKML
 from .marble_map import MarbleMap
 from .op_window import OpWindow
-from .wp_window import WpWindow
-#from .cm_window import CmWindow
 import map_info_parser
 import os
 
@@ -22,50 +19,29 @@ class MapWindow(QWidget):
         loadUi(ui_file, self)
         self.setObjectName(uifname)
 
-        self._marble_map = MarbleMap()
+        self.gps_dict = map_info_parser.get_gps_dict()
+        self.blankname = '-- BLANK MAP --'
+        self.gps_dict[self.blankname] = [[0.0, 0.0], 18]
+        self._marble_map = MarbleMap(self.gps_dict, self.blankname)
         self.verticalLayout.addWidget(self._marble_map)
 
-        map_coords = map_info_parser.get_gps_dict()
         self._home_opts.clear()
-        self._home_opts.addItems(list(map_coords))
-        self._home_opts.setCurrentIndex(list(map_coords).index(map_info_parser.get_default()))
+        keylist = sorted(self.gps_dict, key=self.gps_dict.get)
+        self._home_opts.addItems(keylist)
+        self._home_opts.setCurrentIndex(keylist.index(map_info_parser.get_default()))
         self._home_opts.currentIndexChanged[str].connect(self._update_home)
 
         self._gridview_toggle.stateChanged[int].connect(self._marble_map.grid_viewer_toggle)
-        self._pathviewer_toggle.stateChanged[int].connect(self._marble_map.path_viewer_toggle)
 
-        #self.init_manage_kml()
         self.init_op_window()
-        self.init_wp_window()
-        #self.init_cm_window()
         self._recenter.clicked.connect(self._marble_map.recenter)
-    '''
-    def init_manage_kml(self):
-        self.manageKML = ManageKML(self._marble_map)
-        self._manage_KML.clicked.connect(self.manageKML.display_manage_KML_modal)
-        self.manageKML.add_default_KML_files()
-    '''
+
     def init_op_window(self):
         self.opWindow = OpWindow(self._marble_map)
         self._map_options.clicked.connect(self.open_op_window)
 
-    def init_wp_window(self):
-        self.wpWindow = WpWindow(self._marble_map)
-        self._send_WP.clicked.connect(self.open_wp_window)
-    '''
-    def init_cm_window(self):
-        self.cmWindow = CmWindow(self._marble_map)
-        self._special_commands.clicked.connect(self.open_cm_window)
-    '''
     def open_op_window(self):
         self.opWindow.show()
-
-    def open_wp_window(self):
-        self.wpWindow.show()
-
-    def open_cm_window(self):
-        self._marble_map._mouse_attentive = True
-        self.cmWindow.show()
 
     def _update_home(self):
         self._marble_map.change_home(self._home_opts.currentText())
