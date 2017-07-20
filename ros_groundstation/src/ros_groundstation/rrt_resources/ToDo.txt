@@ -1,2 +1,0 @@
-add gps_init stuff
-move everything to a folder in ground_station

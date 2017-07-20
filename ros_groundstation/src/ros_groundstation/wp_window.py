@@ -1,13 +1,10 @@
 from python_qt_binding import loadUi
 from PyQt5.Qt import *
-from current_path_generator import get_full_current_path
-from drop_planner import drop_plan
-from rrt_resources.new_rrt_path_planner import write_waypoints
 
 QString = type("")
 
 import os, rospy, map_info_parser
-from ros_plane.msg import Waypoint
+from rosplane_msgs.msg import Waypoint
 
 PWD = os.path.dirname(os.path.abspath(__file__))
 
@@ -95,14 +92,14 @@ class WpWindow(QWidget):
                 old_file_path = os.path.join(PWD, 'resources', 'wp_data', old_folder_name, '%s_%s.txt' % (self._home_map, old_folder_name))
                 new_folder_name = self.marble.wp_opts[self.marble.wp_state]['folder_name']
                 new_file_path = os.path.join(PWD, 'resources', 'wp_data', new_folder_name, '%s_%s.txt' % (self._home_map, new_folder_name))
-                write_waypoints(old_file_path, new_file_path)
+                #write_waypoints(old_file_path, new_file_path)
                 self.load_wp_from_file()
                 self.compile_NED_waypoints()
-                self.marble.current_path_NE_list = get_full_current_path(self.NED_waypoints)
+                #self.marble.current_path_NE_list = get_full_current_path(self.NED_waypoints)
                 #self.marble.wp_opts[self.marble.wp_state]['needs_render'] = False
             else:
                 self.compile_NED_waypoints()
-                self.marble.current_path_NE_list = get_full_current_path(self.NED_waypoints)
+                #self.marble.current_path_NE_list = get_full_current_path(self.NED_waypoints)
         self.update_lists() # update wp_window contents
         self.set_title()
         for i, wp in enumerate(self.waypoints): # update map waypoints
@@ -147,7 +144,7 @@ class WpWindow(QWidget):
             wind_e = self.Vw_comps[1]
             print 'wind_e:', wind_e # ------------------------------
             # the following class will automatically publish the drop waypoints:
-            drop_wp_publisher = drop_plan(lat, lon, angle, wind_n, wind_e)
+            #drop_wp_publisher = drop_plan(lat, lon, angle, wind_n, wind_e)
         elif self.marble.GIS.received_msg and not self.marble.wp_state == 'None':
             wp = self.waypoints[0]
             meter_data = self.marble.GIS.GB.gps_to_ned(wp[0],wp[1], (wp[2]-22.0)/3.28084)
