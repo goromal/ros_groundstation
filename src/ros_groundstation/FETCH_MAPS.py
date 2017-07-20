@@ -14,7 +14,7 @@ _PWD = os.path.dirname(os.path.abspath(__file__))
 def pd(path):
     return os.path.abspath(os.path.join(path, os.pardir))
 
-_INFO_FILE_PATH = os.path.join(pd(pd(pd(_PWD))), 'map_info.xml')
+_INFO_FILE_PATH = os.path.join(pd(pd(_PWD)), 'map_info.xml')
 
 if get_key():
     _KEY = '&key=' + get_key()
