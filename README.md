@@ -1,4 +1,4 @@
-# rosplane_groundstation
+# ros_groundstation
 RQT plugin for interacting with byu-magicc ROSplane
 
 ## Installation Instructions:
