@@ -5,8 +5,8 @@ from .Geo import Geobase
 from math import fmod, pi
 
 # custom messages
-from rosflight_msgs.msg import State, GPS, RCRaw
-from rosplane_msgs.msg import Current_Path, Waypoint #, State?
+from rosflight_msgs.msg import GPS, RCRaw
+from rosplane_msgs.msg import Current_Path, Waypoint, State
 #from ros_plane.msg import Current_Path, Waypoint # FOR TESTING ONLY ---------------
 
 class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++

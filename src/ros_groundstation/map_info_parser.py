@@ -6,8 +6,8 @@ PWD = os.path.dirname(os.path.abspath(__file__))
 def pd(path):
     return os.path.abspath(os.path.join(path, os.pardir))
 
-KEY_FILE_PATH = os.path.join(pd(pd(pd(PWD))), 'key.xml')
-INFO_FILE_PATH = os.path.join(pd(pd(pd(PWD))), 'map_info.xml')
+KEY_FILE_PATH = os.path.join(pd(pd(PWD)), 'key.xml')
+INFO_FILE_PATH = os.path.join(pd(pd(PWD)), 'map_info.xml')
 
 def get_key():
     xmlroot = ET.parse(KEY_FILE_PATH).getroot()
