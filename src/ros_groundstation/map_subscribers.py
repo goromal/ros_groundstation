@@ -84,7 +84,7 @@ class StateSub():
             d = state.position[2]
             StateSub.lat, StateSub.lon, StateSub.alt = InitSub.GB.ned_to_gps(n, e, d)
             StateSub.alt -= InitSub.init_latlonalt[2]
-            StateSub.chi = state.chi#fmod(state.chi, 2*pi)
+            StateSub.chi = fmod(state.chi, 2*pi)
             StateSub.Va = state.Va
             StateSub.phi = state.phi
             StateSub.theta = state.theta

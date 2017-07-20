@@ -38,14 +38,21 @@ class Geobase:
     #Pre: north, east ,down are in meters
     #Post: Returns latitude, longitude, altitude
     def ned_to_gps(self, north, east, down = 0):
-        s_12 = math.sqrt(north**2+east**2)
-        if s_12 == 0:
-            azi_1 = 0
+        arc_distance = math.sqrt(north**2+east**2)
+        '''
+        if arc_distance == 0:
+            return self.origin[0], self.origin[1], -down
         else:
-            azi_1 = math.degrees(math.asin(east/s_12))
-        diction = Geodesic.WGS84.Direct(self.origin[0], self.origin[1], azi_1, s_12)
+            azi_1 = math.degrees(math.asin(east/arc_distance))
+        '''
+        azi_1 = math.degrees(math.atan2(east, north))
+        diction = Geodesic.WGS84.Direct(self.origin[0], self.origin[1], azi_1, arc_distance)
         #solution = [diction['lat2'], diction['lon2'], -down]
         #return solution
+        #if diction['lat2'] < self.origin[0]:
+        #    print 'The problem\'s not me!==========================='
+        #else:
+        #    print '+++++++++++++++++++++++++'
         return diction['lat2'], diction['lon2'], -down
 
     #Function decimal_degrees
