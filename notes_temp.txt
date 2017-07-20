@@ -1,0 +1,14 @@
+Installation instructions: =================
+
+(if you don't have pip)
+sudo apt-get install python-pip
+
+(install geographiclib for latlong calculations)
+sudo pip install geographiclib
+
+
+In case of plugin issues: ===================
+
+rm ~/.config/ros.org/rqt_gui.ini
+(make sure workspace is sourced)
+(relaunch rqt)

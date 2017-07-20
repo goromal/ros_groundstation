@@ -3,6 +3,7 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+QString = type("")
 import os.path
 from math import sin, cos, radians
 
@@ -59,6 +60,9 @@ class MarbleMap(QWidget):
         self.plane_h = 30 # pixels
         self.plane_w = 25 # pixels
 
+        self.draw_gridlines = False
+        self.grid_dist = 20 # meters
+
     def get_size(self):
         frame_size = self.frameSize()
         self.w_width = frame_size.width()
@@ -114,6 +118,12 @@ class MarbleMap(QWidget):
         if not self._mouse_attentive:
             self.setCursor(QCursor(Qt.OpenHandCursor))
 
+    def grid_viewer_toggle(self, state_integer):
+        if state_integer == 2:
+            self.draw_gridlines = True
+        else:
+            self.draw_gridlines = False
+
     def path_viewer_toggle(self, state_integer):
         if state_integer == 2: # checkbox checked
             self.view_full_path = True
@@ -149,6 +159,8 @@ class MarbleMap(QWidget):
         painter.drawLine(self.GMP.width/2, self.GMP.height/2-8, self.GMP.width/2, self.GMP.height/2+8)
         painter.drawLine(self.GMP.width/2-8, self.GMP.height/2, self.GMP.width/2+8, self.GMP.height/2)
 
+        if self.draw_gridlines:
+            self.draw_grid(painter)
         if WaypointSub.enabled:
             self.draw_waypoints(painter)
         if ObstacleSub.enabled:
@@ -160,7 +172,40 @@ class MarbleMap(QWidget):
 
         painter.end()
 
-    # paint using self.GMP.center and self.GMP.lat/lon_to_pix_coefficient
+    # draws gridlines at 10-meter increments
+    def draw_grid(self, painter): # ++++++++++++++++++++++++++++++++++++
+        painter.fillRect(QRect(0, self.GMP.height - 20, self.GMP.width, self.GMP.height), Qt.white)
+        painter.fillRect(QRect(0, 0, 50, self.GMP.height - 20), Qt.white)
+        painter.setPen(QPen(QBrush(Qt.black), 1.5, Qt.SolidLine, Qt.RoundCap))
+        pixels_per_dist = self.grid_dist * 2**self.GMP.zoom / (156543.03392 * cos(radians(InitSub.init_latlonalt[0])))
+
+        x_min, x_offset = divmod(GoogleMapPlotter.rel_lon_to_rel_pix(InitSub.init_latlonalt[1], self.GMP.west, self.GMP.zoom), pixels_per_dist)
+        x_offset = pixels_per_dist - x_offset
+        x_min = int(x_min)
+        x_max = x_min + int(self.GMP.width / pixels_per_dist) + 1
+        x_min += 1
+
+        y_min, y_offset = divmod(GoogleMapPlotter.rel_lat_to_rel_pix(self.GMP.south, InitSub.init_latlonalt[0], self.GMP.zoom), pixels_per_dist)
+        y_offset = pixels_per_dist - y_offset
+        y_min = int(y_min)
+        y_max = y_min + int(self.GMP.height / pixels_per_dist) + 1
+        y_min += 1
+        #print y_min, y_max
+
+        for i, x_line in enumerate(range(x_min, x_max + 1)):
+            x_coord = x_offset + i * pixels_per_dist
+            painter.drawLine(x_coord, 0, x_coord, self.GMP.height)
+            if self.GMP.zoom > 17:
+                text_point = QPoint(x_coord + 2, self.GMP.height - 5)
+                painter.drawText(text_point, QString('%d m' % (x_line * self.grid_dist)))
+
+        for i, y_line in enumerate(range(y_min, y_max + 1)):
+            y_coord = self.GMP.height - (y_offset + i * pixels_per_dist)
+            painter.drawLine(0, y_coord, self.GMP.width, y_coord)
+            if self.GMP.zoom > 17:
+                text_point = QPoint(5, y_coord - 7)
+                painter.drawText(text_point, QString('%d m' % (y_line * self.grid_dist)))
+
     def draw_waypoints(self, painter):
         painter.setPen(QPen(QBrush(Qt.darkRed), 2.5, Qt.SolidLine, Qt.RoundCap))
         # it can be assumed that all waypoints are converted to latlon if the sub is enabled

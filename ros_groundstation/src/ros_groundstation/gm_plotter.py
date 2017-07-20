@@ -1,4 +1,4 @@
-from resources.FETCH_MAPS import *
+from FETCH_MAPS import *
 from collections import defaultdict
 from PyQt5.QtCore import QRect, Qt
 

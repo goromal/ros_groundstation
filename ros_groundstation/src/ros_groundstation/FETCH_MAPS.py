@@ -1,5 +1,6 @@
 import math, urllib, os, shutil, time, sys
 import xml.etree.cElementTree as ET
+from map_info_parser import get_key
 from PyQt5.QtGui import QImage, QPainter
 from PyQt5.QtCore import QPoint
 
@@ -8,9 +9,16 @@ QString = type("")
 _default_radius_m = 1000            # * radius of map coverage, in meters
 zooms = [17,18,19,20]               # 0-22
 
-try:
-    from _key import _KEY
-except:
+_PWD = os.path.dirname(os.path.abspath(__file__))
+
+def pd(path):
+    return os.path.abspath(os.path.join(path, os.pardir))
+
+_INFO_FILE_PATH = os.path.join(pd(pd(pd(_PWD))), 'map_info.xml')
+
+if get_key():
+    _KEY = '&key=' + get_key()
+else:
     _KEY = ''
 
 TILEWIDTH = 640       # Larget tile dimension you can grab without paying
@@ -20,9 +28,6 @@ _GRABRATE = 4          # Fastest rate at which we can download tiles without pay
 _EARTHPIX = 268435456  # Number of pixels in half the earth's circumference at zoom = 21
 _DEGREE_PRECISION = 4  # Number of decimal places for rounding coordinates
 _pixrad = _EARTHPIX / math.pi
-
-_PWD = os.path.dirname(os.path.abspath(__file__))
-_INFO_FILE_PATH = os.path.join(_PWD, 'map_info.xml')
 
 _MAPS_CACHE_PATH = os.path.expanduser('~/.local/share/mapscache')
 

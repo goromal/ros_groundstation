@@ -2,7 +2,16 @@ import xml.etree.cElementTree as ET
 import os, errno
 
 PWD = os.path.dirname(os.path.abspath(__file__))
-INFO_FILE_PATH = os.path.join(PWD, 'resources', 'map_info.xml')
+
+def pd(path):
+    return os.path.abspath(os.path.join(path, os.pardir))
+
+KEY_FILE_PATH = os.path.join(pd(pd(pd(PWD))), 'key.xml')
+INFO_FILE_PATH = os.path.join(pd(pd(pd(PWD))), 'map_info.xml')
+
+def get_key():
+    xmlroot = ET.parse(KEY_FILE_PATH).getroot()
+    return xmlroot.text.strip()
 
 def get_default():
     xmlroot = ET.parse(INFO_FILE_PATH).getroot()
@@ -17,6 +26,7 @@ def get_gps_dict():
         lon = float(str(xmlnode.find('lon').text))
         zoom = int(str(xmlnode.find('zoom').text))
         gps_dict[name] = [[lat, lon], zoom]
+    #gps_dict['-- BLANK --'] = [[0.0,0.0],18]
     return gps_dict
 
 def get_typed_waypoints(map_name, folder_name):

@@ -31,6 +31,7 @@ class MapWindow(QWidget):
         self._home_opts.setCurrentIndex(list(map_coords).index(map_info_parser.get_default()))
         self._home_opts.currentIndexChanged[str].connect(self._update_home)
 
+        self._gridview_toggle.stateChanged[int].connect(self._marble_map.grid_viewer_toggle)
         self._pathviewer_toggle.stateChanged[int].connect(self._marble_map.path_viewer_toggle)
 
         #self.init_manage_kml()
@@ -38,12 +39,12 @@ class MapWindow(QWidget):
         self.init_wp_window()
         #self.init_cm_window()
         self._recenter.clicked.connect(self._marble_map.recenter)
-
+    '''
     def init_manage_kml(self):
         self.manageKML = ManageKML(self._marble_map)
         self._manage_KML.clicked.connect(self.manageKML.display_manage_KML_modal)
         self.manageKML.add_default_KML_files()
-
+    '''
     def init_op_window(self):
         self.opWindow = OpWindow(self._marble_map)
         self._map_options.clicked.connect(self.open_op_window)
