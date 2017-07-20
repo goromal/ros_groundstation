@@ -1,12 +1,12 @@
 import sys, math, rospy, random
-from PyQt5 import QtGui, QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt, QPointF,QRectF, QPoint
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPolygon
 from rosflight_msgs.msg import State, GPS
 from std_msgs.msg import Float32
 from .map_subscribers import *
 
-class ArtificialHorizon(QtGui.QWidget):
+class ArtificialHorizon(QtWidgets.QWidget):
     def __init__(self):
         super(ArtificialHorizon, self).__init__()
         self.initUI()
