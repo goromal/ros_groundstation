@@ -7,7 +7,7 @@ NED_with_GPS_defaults = \
         'pubsubs':
         {
             'State Subscriber': (True, '/state'),
-            'GPS init Subscriber': (False, '/gps_init'),
+            'GPS init Subscriber': (True, '/state'),
             'Path Subscriber': (True, '/current_path'),
             'Waypoint Subscriber': (True, '/waypoint_path'),
             'Waypoint Publisher': (False, '/waypoint/pub')

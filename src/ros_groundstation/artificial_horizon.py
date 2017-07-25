@@ -2,7 +2,6 @@ import sys, math, rospy, random
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, Qt, QPointF,QRectF, QPoint
 from PyQt5.QtGui import QColor, QBrush, QPen, QFont, QPolygon
-from rosflight_msgs.msg import State, GPS
 from std_msgs.msg import Float32
 from .map_subscribers import *
 
@@ -190,7 +189,7 @@ class ArtificialHorizon(QtWidgets.QWidget):
         painter.setPen(QPen(QBrush(QColor(0,0,0,0)), 2, Qt.SolidLine))
         painter.drawPolygon(poly)
         painter.setPen(QPen(QBrush(QColor(255,255,0)), 2, Qt.SolidLine))
-        text = str(self.altitude) + " ft"
+        text = str(self.altitude) + " m"
         rect = QRectF(p1,p4)
         painter.drawText(rect,QtCore.Qt.AlignCenter,text)
         painter.drawText(QPoint(self.width-boxWidth+5,(self.height-boxHeight)/2-5),"Altitude")

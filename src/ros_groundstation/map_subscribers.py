@@ -1,5 +1,5 @@
 import rospy
-from std_msgs.msg import String, Float32MultiArray #(---?---)
+from std_msgs.msg import String
 import json, re
 from .Geo import Geobase
 from math import fmod, pi
@@ -26,10 +26,10 @@ class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
         InitSub.enabled = True
 
     @staticmethod
-    def gi_callback(gps_array):
-        InitSub.init_latlonalt[0] = gps_array.data[0]
-        InitSub.init_latlonalt[1] = gps_array.data[1]
-        InitSub.init_latlonalt[2] = gps_array.data[2]
+    def state_callback(state):
+        InitSub.init_latlonalt[0] = state.initial_lat
+        InitSub.init_latlonalt[1] = state.initial_lon
+        InitSub.init_latlonalt[2] = state.initial_alt
         InitSub.GB = Geobase(InitSub.init_latlonalt[0], InitSub.init_latlonalt[1])
         InitSub.enabled = True # only perform the calculations if GPS init received
         InitSub.gi_sub.unregister()
@@ -40,7 +40,7 @@ class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
         InitSub.reset()
         InitSub.with_init = True
         InitSub.gps_init_topic = new_topic
-        InitSub.gi_sub = rospy.Subscriber(InitSub.gps_init_topic, Float32MultiArray, InitSub.gi_callback)
+        InitSub.gi_sub = rospy.Subscriber(InitSub.gps_init_topic, State, InitSub.state_callback)
 
     @staticmethod
     def closeSubscriber():
@@ -83,7 +83,7 @@ class StateSub():
             e = state.position[1]
             d = state.position[2]
             StateSub.lat, StateSub.lon, StateSub.alt = InitSub.GB.ned_to_gps(n, e, d)
-            StateSub.alt -= InitSub.init_latlonalt[2]
+            #StateSub.alt -= InitSub.init_latlonalt[2]
             StateSub.chi = fmod(state.chi, 2*pi)
             StateSub.Va = state.Va
             StateSub.phi = state.phi
