@@ -103,6 +103,16 @@ class OpWindow(QWidget):
         self.MD_rcsub_textedit = QTextEdit(QString(check_tuple[1]))
         self.handle_rcsub_checkbox(check_tuple[0])
         pubsub_layout.addWidget(self.MD_rcsub_textedit)
+        channel_layout = QVBoxLayout()
+        channel_layout.addWidget(QLabel(QString("Autopilot Toggle Channel:")))
+        self.MD_rcsub_channel = QComboBox()
+        self.MD_rcsub_channel.clear()
+        channel_list = ['5', '6', '7', '8']
+        self.MD_rcsub_channel.addItems(channel_list)
+        self.MD_rcsub_channel.setCurrentIndex(0)
+        self.MD_rcsub_channel.currentIndexChanged[str].connect(self.update_rc_channel)
+        channel_layout.addWidget(self.MD_rcsub_channel)
+        pubsub_layout.addLayout(channel_layout)
         layout.addLayout(pubsub_layout)
 
         label = 'GPS Data Subscriber'
@@ -194,3 +204,6 @@ class OpWindow(QWidget):
             RCSub.updateRCRawTopic(topic_name)
         else:
             RCSub.closeSubscriber()
+
+    def update_rc_channel(self, new_index):
+        RCSub.updateRCChannel(int(new_index))

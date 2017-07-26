@@ -7,7 +7,6 @@ from math import fmod, pi
 # custom messages
 from rosflight_msgs.msg import GPS, RCRaw
 from rosplane_msgs.msg import Current_Path, Waypoint, State
-#from ros_plane.msg import Current_Path, Waypoint # FOR TESTING ONLY ---------------
 
 class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
     init_latlonalt = [0.0, 0.0, 0.0]
@@ -115,6 +114,7 @@ class RCSub():
     rc_sub = None
     rc_raw_topic = None
     autopilotEnabled = True
+    channel = 5
 
     @staticmethod
     def updateRCRawTopic(new_rc_raw_topic):
@@ -125,8 +125,13 @@ class RCSub():
             RCSub.rc_sub = rospy.Subscriber(RCSub.rc_raw_topic, RCRaw, RCSub.rc_callback)
 
     @staticmethod
+    def updateRCChannel(new_rc_channel):
+        print 'updating RC channel to', new_rc_channel
+        RCSub.channel = new_rc_channel
+
+    @staticmethod
     def rc_callback(rcRaw):
-        RCSub.autopilotEnabled = (rcRaw.values[4] < 1700)
+        RCSub.autopilotEnabled = (rcRaw.values[RCSub.channel-1] < 1700)
 
     @staticmethod
     def closeSubscriber():
@@ -139,6 +144,7 @@ class RCSub():
         if not RCSub.rc_sub is None:
             RCSub.rc_sub.unregister()
             RCSub.rc_sub = None
+            RCSub.channel = 5
 
 class PathSub():
     path_sub = None
