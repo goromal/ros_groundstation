@@ -127,6 +127,30 @@ class OpWindow(QWidget):
         pubsub_layout.addWidget(self.MD_gpssub_textedit)
         layout.addLayout(pubsub_layout)
 
+        label = 'Controller Internals Subscriber'
+        check_tuple = MD[label]
+        pubsub_layout = QBoxLayout(0)
+        self.MD_cisub_checkbox = QCheckBox(QString(label))
+        self.MD_cisub_checkbox.setChecked(check_tuple[0])
+        self.MD_cisub_checkbox.stateChanged[int].connect(self.handle_cisub_checkbox)
+        pubsub_layout.addWidget(self.MD_cisub_checkbox)
+        self.MD_cisub_textedit = QTextEdit(QString(check_tuple[1]))
+        self.handle_cisub_checkbox(check_tuple[0])
+        pubsub_layout.addWidget(self.MD_cisub_textedit)
+        layout.addLayout(pubsub_layout)
+
+        label = 'Controller Commands Subscriber'
+        check_tuple = MD[label]
+        pubsub_layout = QBoxLayout(0)
+        self.MD_ccsub_checkbox = QCheckBox(QString(label))
+        self.MD_ccsub_checkbox.setChecked(check_tuple[0])
+        self.MD_ccsub_checkbox.stateChanged[int].connect(self.handle_ccsub_checkbox)
+        pubsub_layout.addWidget(self.MD_ccsub_checkbox)
+        self.MD_ccsub_textedit = QTextEdit(QString(check_tuple[1]))
+        self.handle_ccsub_checkbox(check_tuple[0])
+        pubsub_layout.addWidget(self.MD_ccsub_textedit)
+        layout.addLayout(pubsub_layout)
+
         label = 'Obstacle Subscriber'
         check_tuple = MD[label]
         pubsub_layout = QBoxLayout(0)
@@ -204,6 +228,22 @@ class OpWindow(QWidget):
             RCSub.updateRCRawTopic(topic_name)
         else:
             RCSub.closeSubscriber()
+
+    def handle_cisub_checkbox(self, state_integer):
+        checked = state_integer
+        topic_name = str(self.MD_cisub_textedit.toPlainText())
+        if checked:
+            ConInSub.updateConInTopic(topic_name)
+        else:
+            ConInSub.closeSubscriber()
+
+    def handle_ccsub_checkbox(self, state_integer):
+        checked = state_integer
+        topic_name = str(self.MD_ccsub_textedit.toPlainText())
+        if checked:
+            ConComSub.updateConComTopic(topic_name)
+        else:
+            ConComSub.closeSubscriber()
 
     def update_rc_channel(self, new_index):
         RCSub.updateRCChannel(int(new_index))

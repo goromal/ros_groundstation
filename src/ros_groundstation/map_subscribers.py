@@ -6,7 +6,7 @@ from math import fmod, pi
 
 # custom messages
 from rosflight_msgs.msg import GPS, RCRaw
-from rosplane_msgs.msg import Current_Path, Waypoint, State
+from rosplane_msgs.msg import Current_Path, Waypoint, State, Controller_Internals, Controller_Commands
 
 class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
     init_latlonalt = [0.0, 0.0, 0.0]
@@ -42,6 +42,10 @@ class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
         InitSub.gi_sub = rospy.Subscriber(InitSub.gps_init_topic, State, InitSub.state_callback)
 
     @staticmethod
+    def getGPSInitTopic():
+        return InitSub.gps_init_topic
+
+    @staticmethod
     def closeSubscriber():
         InitSub.reset()
 
@@ -74,6 +78,10 @@ class StateSub():
         StateSub.state_topic = new_state_topic
         if not StateSub.state_topic is None:
             StateSub.state_sub = rospy.Subscriber(StateSub.state_topic, State, StateSub.state_callback)
+
+    @staticmethod
+    def getStateTopic():
+        return StateSub.state_topic
 
     @staticmethod
     def state_callback(state):
@@ -125,6 +133,10 @@ class RCSub():
             RCSub.rc_sub = rospy.Subscriber(RCSub.rc_raw_topic, RCRaw, RCSub.rc_callback)
 
     @staticmethod
+    def getRCRawTopic():
+        return RCSub.rc_raw_topic
+
+    @staticmethod
     def updateRCChannel(new_rc_channel):
         print 'updating RC channel to', new_rc_channel
         RCSub.channel = new_rc_channel
@@ -163,6 +175,10 @@ class PathSub():
         PathSub.path_topic = new_path_topic
         if not PathSub.path_topic is None:
             PathSub.path_sub = rospy.Subscriber(PathSub.path_topic, Current_Path, PathSub.path_callback)
+
+    @staticmethod
+    def getPathTopic():
+        return PathSub.path_topic
 
     @staticmethod
     def path_callback(path):
@@ -218,6 +234,10 @@ class WaypointSub():
             WaypointSub.wp_sub = rospy.Subscriber(WaypointSub.waypoint_topic, Waypoint, WaypointSub.waypoint_callback)
 
     @staticmethod
+    def getWaypointTopic():
+        return WaypointSub.waypoint_topic
+
+    @staticmethod
     def waypoint_callback(wp):
         if InitSub.enabled:
             lat, lon, alt = InitSub.GB.ned_to_gps(wp.w[0], wp.w[1], wp.w[2])
@@ -258,6 +278,10 @@ class ObstacleSub():
         ObstacleSub.obstacle_topic = new_obstacle_topic
         if not ObstacleSub.obstacle_topic is None:
             ObstacleSub.obs_sub = rospy.Subscriber(ObstacleSub.obstacle_topic, String, ObstacleSub.json_callback)
+
+    @staticmethod
+    def getObstacleTopic():
+        return ObstacleSub.obstacle_topic
 
     @staticmethod
     def json_callback(obstacles_json):
@@ -314,6 +338,10 @@ class GPSDataSub():
             GPSDataSub.gps_sub = rospy.Subscriber(GPSDataSub.gps_data_topic, GPS, GPSDataSub.callback_GPS)
 
     @staticmethod
+    def getGPSDataTopic():
+        return GPSDataSub.gps_data_topic
+
+    @staticmethod
     def callback_GPS(gps_data):
         GPSDataSub.numSat = gps_data.NumSat
         GPSDataSub.enabled = True
@@ -330,3 +358,84 @@ class GPSDataSub():
         if not GPSDataSub.gps_sub is None:
             GPSDataSub.gps_sub.unregister()
             GPSDataSub.gps_sub = None
+
+class ConInSub():
+    con_in_sub = None
+    controller_inners_topic = None
+    theta_c = 0.0
+    phi_c = 0.0
+    enabled = False
+
+    @staticmethod
+    def updateConInTopic(new_controller_inners_topic):
+        print 'subscribing to', new_controller_inners_topic
+        ConInSub.reset()
+        ConInSub.controller_inners_topic = new_controller_inners_topic
+        #if not ConInSub.controller_inners_topic is None:
+        #    ConInSub.con_in_sub = rospy.Subscriber(ConInSub.controller_inners_topic, Controller_Internals, ConInSub.callback_ConIn)
+
+    @staticmethod
+    def getConInTopic():
+        return ConInSub.controller_inners_topic
+
+    @staticmethod
+    def callback_ConIn(controller_internals):
+        ConInSub.theta_c = controller_internals.theta_c
+        ConInSub.phi_c = controller_internals.phi_c
+        ConInSub.enabled = True
+
+    @staticmethod
+    def closeSubscriber():
+        print 'closing subscriber'
+        ConInSub.reset()
+
+    @staticmethod
+    def reset():
+        ConInSub.enabled = False
+        ConInSub.theta_c = 0.0
+        ConInSub.phi_c = 0.0
+        if not ConInSub.con_in_sub is None:
+            ConInSub.con_in_sub.unregister()
+            ConInSub.con_in_sub = None
+
+class ConComSub():
+    con_com_sub = None
+    controller_commands_topic = None
+    Va_c = 0.0
+    h_c = 0.0
+    chi_c = 0.0
+    enabled = False
+
+    @staticmethod
+    def updateConComTopic(new_controller_commands_topic):
+        print 'subscribing to', new_controller_commands_topic
+        ConComSub.reset()
+        ConComSub.controller_commands_topic = new_controller_commands_topic
+        #if not ConComSub.controller_commands_topic is None:
+        #    ConComSub.con_com_sub = rospy.Subscriber(ConComSub.controller_commands_topic, Controller_Commands, ConComSub.callback_ConCom)
+
+    @staticmethod
+    def getConComTopic():
+        return ConComSub.controller_commands_topic
+
+    @staticmethod
+    def callback_ConCom(controller_commands):
+        ConComSub.Va_c = controller_commands.Va_c
+        ConComSub.h_c = controller_commands.h_c
+        ConComSub.chi_c = controller_commands.chi_c
+        ConComSub.enabled = True
+
+    @staticmethod
+    def closeSubscriber():
+        print 'closing subscriber'
+        ConComSub.reset()
+
+    @staticmethod
+    def reset():
+        ConComSub.enabled = False
+        ConComSub.Va_c = 0.0
+        ConComSub.h_c = 0.0
+        ConComSub.chi_c = 0.0
+        if not ConComSub.con_com_sub is None:
+            ConComSub.con_com_sub.unregister()
+            ConComSub.con_com_sub = None

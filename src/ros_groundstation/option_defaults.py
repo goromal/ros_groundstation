@@ -18,5 +18,7 @@ misc_defaults = \
     {
         'RC Raw Subscriber': (True, '/rc_raw'),
         'GPS Data Subscriber': (True, '/gps/data'),
+        'Controller Internals Subscriber': (True, '/controller_inners'),
+        'Controller Commands Subscriber': (True, '/controller_commands'),
         'Obstacle Subscriber': (False, '/obstacles')
     }

@@ -38,6 +38,7 @@ class PyQtGraphDataPlot(QWidget):
         self._current_vline = None
 
     def add_curve(self, curve_id, curve_name, curve_color=QColor(Qt.blue), markers_on=False):
+        #print 'activated.' # ---------------------------------------------
         pen = mkPen(curve_color, width=1)
         symbol = "o"
         symbolPen = mkPen(QColor(Qt.black))
@@ -48,6 +49,8 @@ class PyQtGraphDataPlot(QWidget):
         else:
             plot = self._plot_widget.plot(name=curve_name, pen=pen)
         self._curves[curve_id] = plot
+        #self._update_legend()# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        #print self._curves # ----------------------------------------
 
     def remove_curve(self, curve_id):
         curve_id = str(curve_id)
@@ -61,6 +64,7 @@ class PyQtGraphDataPlot(QWidget):
         self._plot_widget.clear()
         self._plot_widget.getPlotItem().legend.items = []
         for curve in self._curves.values():
+            #print 'added curve'
             self._plot_widget.addItem(curve)
         if self._current_vline:
             self._plot_widget.addItem(self._current_vline)

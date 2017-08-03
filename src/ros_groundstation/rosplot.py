@@ -1,5 +1,5 @@
 import string
-import sys
+import sys, os
 import threading
 import time
 
@@ -8,6 +8,8 @@ import roslib.message
 import roslib.names
 import rospy
 
+from .map_subscribers import *
+from python_qt_binding.QtCore import QTimer
 
 class RosPlotException(Exception):
     pass
@@ -49,7 +51,7 @@ def get_topic_type(topic):
     else:
         return None, None, None
 
-
+'''
 class ROSData(object):
     """
     Subscriber to ROS topic that buffers incoming data
@@ -69,6 +71,8 @@ class ROSData(object):
             self.field_evals = generate_field_evals(fields)
             data_class = roslib.message.get_message_class(topic_type)
             self.sub = rospy.Subscriber(real_topic, data_class, self._ros_cb)
+            #self.sub = rospy.Subscriber(topic, data_class, self._ros_cb)
+            #print 'plot subscribed to', topic
         #=======================================================================
         else:
             self.error = RosPlotException("Can not resolve topic type of %s" % topic)
@@ -77,6 +81,7 @@ class ROSData(object):
         self.sub.unregister()
 
     def _ros_cb(self, msg):
+        print 'callback entered for', self.name # --------------------------------------------------------------------------------
         """
         ROS subscriber callback
         :param msg: ROS message data
@@ -91,7 +96,9 @@ class ROSData(object):
                 else:
                     self.buff_x.append(rospy.get_time() - self.start_time)
                 #self.axes[index].plot(datax, buff_y)
+                #print 'added', self.name, 'data, x,y=', str(rospy.get_time() - self.start_time), str(self._get_data(msg)) # -----------------------------
             except AttributeError, e:
+                #print 'invalid' # ---------------------------------------------------------------------------------------------------------------
                 self.error = RosPlotException("Invalid topic spec [%s]: %s" % (self.name, str(e)))
         finally:
             self.lock.release()
@@ -125,7 +132,83 @@ class ROSData(object):
             self.error = RosPlotException("[%s] index error for: %s" % (self.name, str(val).replace('\n', ', ')))
         except TypeError:
             self.error = RosPlotException("[%s] value was not numeric: %s" % (self.name, val))
+'''
+def get_data(topic_code, topic_item):
+    if topic_code == 's':
+        if topic_item == 'chi':
+            return StateSub.chi
+        elif topic_item == 'phi':
+            return StateSub.phi
+        elif topic_item == 'theta':
+            return StateSub.theta
+        elif topic_item == 'Va':
+            return StateSub.Va
+    elif topic_code == 'ci':
+        if topic_item == 'phi_c':
+            return ConInSub.phi_c
+        elif topic_item == 'theta_c':
+            return ConInSub.theta_c
+    elif topic_code == 'cc':
+        if topic_item == 'chi_c':
+            return ConComSub.chi_c
+        elif topic_item == 'Va_c':
+            return ConComSub.Va_c
 
+class ROSData(object):
+    """
+    Subscriber to ROS topic that buffers incoming data
+    """
+
+    def __init__(self, topic_code, topic_item, start_time):
+        self.name = topic_code + '/' + topic_item
+        self.start_time = start_time
+        self.error = None
+
+        self.lock = threading.Lock()
+        self.buff_x = []
+        self.buff_y = []
+
+        self.interval = 100     # in milliseconds, period of regular update
+        self.timer = QTimer()
+        self.timer.setInterval(self.interval)
+        self.timer.timeout.connect(self._ros_cb)
+
+        self.code = topic_code
+        self.item = topic_item
+        #self.data = 0.0
+        # go through options and decide what your self.data will be, given the ros subscribers
+
+
+        self.timer.start()
+
+    def close(self):
+        self.timer.stop()
+
+    def _ros_cb(self):
+        #print 'callback entered for', self.name # --------------------------------------------------------------------------------
+        """
+        ROS "subscriber callback"
+        :param msg: ROS message data
+        """
+        self.buff_x.append(rospy.get_time() - self.start_time)
+        self.buff_y.append(get_data(self.code, self.item))
+
+    def next(self):
+        """
+        Get the next data in the series
+        :returns: [xdata], [ydata]
+        """
+        if self.error:
+            raise self.error
+        try:
+            self.lock.acquire()
+            buff_x = self.buff_x
+            buff_y = self.buff_y
+            self.buff_x = []
+            self.buff_y = []
+        finally:
+            self.lock.release()
+        return buff_x, buff_y
 
 def _array_eval(field_name, slot_num):
     """

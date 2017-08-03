@@ -11,7 +11,9 @@ import rospy
 
 from rqt_py_common import topic_helpers
 
-from . rosplot import ROSData, RosPlotException
+from .rosplot import ROSData, RosPlotException
+
+from .map_subscribers import *
 PWD = os.path.dirname(os.path.abspath(__file__))
 
 def get_plot_fields(topic_name):
@@ -73,9 +75,30 @@ def get_plot_fields(topic_name):
             message = "Topic %s is not numeric" % ( topic_name )
             return [], message
 
-def is_plottable(topic_name):
-    fields, message = get_plot_fields(topic_name)
+def is_plottable(topic_names): # returns plottable, message
+    # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    fields, message = get_plot_fields(topic_names)
     return len(fields) > 0, message
+
+def get_topic(topic_tuple):
+    key = topic_tuple[0]
+    maintopic = ''
+    subtopic = topic_tuple[1]
+    #if key == 'i':
+    #    maintopic = InitSub.getGPSInitTopic()
+    if key == 's':
+        maintopic = StateSub.getStateTopic()
+    #if key == 'r':
+    #    maintopic = RCSub.
+    if key == 'ci':
+        maintopic = ConInSub.getConInTopic()
+    if key == 'cc':
+        maintopic = ConComSub.getConComTopic()
+
+    if maintopic is None:
+        return None
+    else:
+        return '%s/%s' % (maintopic, subtopic)
 
 class PlotWidget(QWidget):
     _redraw_interval = 40
@@ -85,13 +108,13 @@ class PlotWidget(QWidget):
         self.setObjectName('PlotWidget')
 
         # Available ros topics for plotting
+        # keys are i=InitSub, s=StateSub, r=RCSub, p=PathSub, w=WaypointSub,
+        #          o=ObstacleSub, g=GPSDataSub, ci=ConInSub, cc=ConComSub
         self.message_dict = {
-            'Course angle (rad)':'/state/chi',
-            'Course angle commanded (rad)':'/controller_commands/chi_c',
-            'Airspeed (m/s)':'/state/Va',
-            'NumSat':'/gps/data/NumSat',
-            'Phi Command':'/controller_inners/phi_c',
-            'Phi':'/state/phi'
+            'Course angle vs. Commanded':[('cc','chi_c'),('s','chi')],
+            'Roll angle vs. Commanded':[('ci','phi_c'),('s','phi')],
+            'Pitch angle vs. Commanded':[('s','theta'),('ci','theta_c')],
+            'Airspeed vs. Commanded':[('s','Va'),('cc','Va_c')]
             }
 
         # # Available ros topics for plotting
@@ -110,7 +133,7 @@ class PlotWidget(QWidget):
         #     'Groundspeed (m/s)':'/state/Vg'
         #     }
 
-        self._initial_topics = initial_topics
+        #self._initial_topics = initial_topics
 
         rp = rospkg.RosPack()
         ui_file = os.path.join(PWD, 'resources', 'plot.ui')
@@ -125,13 +148,16 @@ class PlotWidget(QWidget):
 
         self._start_time = rospy.get_time()
         self._rosdata = {}
-        self._current_topic = ''
+
+        self._current_key = ''
+        self._current_topics = []
+
         self._remove_topic_menu = QMenu()
 
         self._msgs.clear()
         self._msgs.addItems(self.message_dict.keys())
 
-        self._msgs.currentIndexChanged[str].connect(self._draw_graph)
+        self._msgs.currentIndexChanged[str].connect(self._draw_graph) # <<<<<<< start here (also modify the dict)
 
         # init and start update timer for plot
         self._update_plot_timer = QTimer(self)
@@ -151,7 +177,7 @@ class PlotWidget(QWidget):
         # setup drag 'n drop
         self.data_plot.dropEvent = self.dropEvent
         self.data_plot.dragEnterEvent = self.dragEnterEvent
-
+        '''
         if self._initial_topics:
             for topic_name in self._initial_topics:
                 self.add_topic(topic_name)
@@ -162,14 +188,31 @@ class PlotWidget(QWidget):
                 self.data_plot.add_curve(topic_name, topic_name, data_x, data_y)
 
         self._subscribed_topics_changed()
+        '''
 
     def _draw_graph(self):
-        plottable, message = is_plottable(self.message_dict[self._msgs.currentText()])
-        # if self._current_topic: # if there's already a plotted topic
-        #     self.remove_topic(self._current_topic)
+        #print 'entering _draw_graph'
+        # NOT GONNA WORRY ABOUT THIS!
+        # plottable, message = is_plottable(self.message_dict[self._msgs.currentText()]) # <<<<<< will feed this a list
 
-        self._current_topic = self.message_dict[self._msgs.currentText()]
-        self.add_topic(str(self.message_dict[self._msgs.currentText()]))
+        if self._current_key and not (self._msgs.currentText() == self._current_key):
+            for topic_tuple in self._current_topics:
+                #print 'removing %s from plot' % topic # ------------------------
+                self.remove_topic(topic_tuple[0], topic_tuple[1])
+            self._current_topics = []
+
+        self._current_topics = []
+
+        self._current_key = self._msgs.currentText()
+        #print 'current key:', self._current_key
+        for topic_tuple in self.message_dict[self._current_key]:
+            #topic = get_topic(topic_tuple)
+            #print 'topic:', topic
+            #if not (topic is None):
+            self._current_topics.append(topic_tuple)
+            #print 'adding %s to plot' % topic # --------------------------
+            self.add_topic(topic_tuple[0], topic_tuple[1])
+        self._subscribed_topics_changed()
 
     @Slot(bool)
     def on_pause_button_clicked(self, checked):
@@ -194,7 +237,7 @@ class PlotWidget(QWidget):
                 self.data_plot.redraw()
 
     def _subscribed_topics_changed(self):
-        self._update_remove_topic_menu()
+        #self._update_remove_topic_menu() # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         if not self.pause_button.isChecked():
             # if pause button is not pressed, enable timer based on subscribed topics
             self.enable_timer(self._rosdata)
@@ -215,25 +258,31 @@ class PlotWidget(QWidget):
             all_action.triggered.connect(self.clean_up_subscribers)
             self._remove_topic_menu.addAction(all_action)
 
-    def add_topic(self, topic_name):
+    def add_topic(self, topic_code, topic_item):
         topics_changed = False
-        for topic_name in get_plot_fields(topic_name)[0]:
-            if topic_name in self._rosdata:
-                qWarning('PlotWidget.add_topic(): topic already subscribed: %s' % topic_name)
-                continue
-            self._rosdata[topic_name] = ROSData(topic_name, self._start_time)
-            if self._rosdata[topic_name].error is not None:
-                qWarning(str(self._rosdata[topic_name].error))
-                del self._rosdata[topic_name]
-            else:
-                data_x, data_y = self._rosdata[topic_name].next()
-                self.data_plot.add_curve(topic_name, topic_name, data_x, data_y)
-                topics_changed = True
+        topic_name = topic_code + '/' + topic_item
+        #for topic_name in get_plot_fields(topic_name)[0]: # <<<<<<<< this is what allows for multiple topics
+        if topic_name in self._rosdata:
+            qWarning('PlotWidget.add_topic(): topic already subscribed: %s' % topic_name)
+            #continue
+            return
 
-        if topics_changed:
-            self._subscribed_topics_changed()
+        self._rosdata[topic_name] = ROSData(topic_code, topic_item, self._start_time)
 
-    def remove_topic(self, topic_name):
+        if self._rosdata[topic_name].error is not None:
+            qWarning(str(self._rosdata[topic_name].error))
+            del self._rosdata[topic_name]
+        else:
+            data_x, data_y = self._rosdata[topic_name].next()
+            self.data_plot.add_curve(topic_name, topic_name, data_x, data_y)
+            #print self._rosdata.items() # ------------------------------------------
+            topics_changed = True
+
+        #if topics_changed:
+        #    self._subscribed_topics_changed()
+
+    def remove_topic(self, topic_code, topic_item):
+        topic_name = topic_code + '/' + topic_item
         self._rosdata[topic_name].close()
         del self._rosdata[topic_name]
         self.data_plot.remove_curve(topic_name)
