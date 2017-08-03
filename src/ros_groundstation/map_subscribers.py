@@ -161,7 +161,7 @@ class RCSub():
 class PathSub():
     path_sub = None
     path_topic = None
-    flag = True
+    path_type = 0
     r = [0.0, 0.0, 0.0]
     q = [0.0, 0.0, 0.0]
     c = [0.0, 0.0, 0.0]
@@ -183,7 +183,7 @@ class PathSub():
     @staticmethod
     def path_callback(path):
         if InitSub.enabled:
-            PathSub.flag = path.flag
+            PathSub.path_type = path.path_type
             r_lat, r_lon, r_alt = InitSub.GB.ned_to_gps(path.r[0], path.r[1], path.r[2])
             PathSub.r = [r_lat, r_lon, r_alt]
             PathSub.q = [path.q[0], path.q[1], path.q[2]]
@@ -200,7 +200,7 @@ class PathSub():
     @staticmethod
     def reset():
         PathSub.enabled = False
-        PathSub.flag = True
+        PathSub.path_type = 0
         PathSub.r = [0.0, 0.0, 0.0]
         PathSub.q = [0.0, 0.0, 0.0]
         PathSub.c = [0.0, 0.0, 0.0]

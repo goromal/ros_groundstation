@@ -197,7 +197,7 @@ class MarbleMap(QWidget):
 
     def draw_currentpath(self, painter):
         painter.setPen(QPen(QBrush(Qt.red), 3.5, Qt.SolidLine, Qt.RoundCap))
-        if PathSub.flag == True:
+        if PathSub.path_type == 1: # line path
             r = PathSub.r # [lat, lon]
             q = PathSub.q # unit length, NED
             scale = 200   # pixels
