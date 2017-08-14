@@ -2,9 +2,9 @@
 
 import sys
 
-from ros_groundstation.my_module import GroundStationPlugin
+from ros_groundstation.gs_plugin import GroundStationPlugin
 from rqt_gui.main import Main
 
-plugin = 'Ground Station'
+plugin = 'ros_groundstation'
 main = Main(filename=plugin)
 sys.exit(main.main(standalone=plugin))

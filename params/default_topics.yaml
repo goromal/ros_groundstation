@@ -1,0 +1,30 @@
+stateSubChecked: true
+stateSubTopic: /state
+
+gpsInitSubChecked: true
+gpsInitSubTopic: /state
+
+pathSubChecked: true
+pathSubTopic: /current_path
+
+waypointSubChecked: true
+waypointSubTopic: /waypoint_path
+
+waypointPubChecked: false
+waypointPubTopic: /waypoint_path
+
+rcRawSubChecked: true
+rcRawSubTopic: /rc_raw
+rcRawChannel: 6
+
+gpsDataSubChecked: true
+gpsDataSubTopic: /gps/data
+
+controllerInternalsSubChecked: true
+controllerInternalsSubTopic: /controller_inners
+
+controllerCommandsSubChecked: true
+controllerCommandsSubTopic: /controller_commands
+
+obstacleSubChecked: false
+obstacleSubTopic: /obstacles

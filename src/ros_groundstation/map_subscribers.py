@@ -371,8 +371,8 @@ class ConInSub():
         print 'subscribing to', new_controller_inners_topic
         ConInSub.reset()
         ConInSub.controller_inners_topic = new_controller_inners_topic
-        #if not ConInSub.controller_inners_topic is None:
-        #    ConInSub.con_in_sub = rospy.Subscriber(ConInSub.controller_inners_topic, Controller_Internals, ConInSub.callback_ConIn)
+        if not ConInSub.controller_inners_topic is None:
+            ConInSub.con_in_sub = rospy.Subscriber(ConInSub.controller_inners_topic, Controller_Internals, ConInSub.callback_ConIn)
 
     @staticmethod
     def getConInTopic():
@@ -411,8 +411,8 @@ class ConComSub():
         print 'subscribing to', new_controller_commands_topic
         ConComSub.reset()
         ConComSub.controller_commands_topic = new_controller_commands_topic
-        #if not ConComSub.controller_commands_topic is None:
-        #    ConComSub.con_com_sub = rospy.Subscriber(ConComSub.controller_commands_topic, Controller_Commands, ConComSub.callback_ConCom)
+        if not ConComSub.controller_commands_topic is None:
+            ConComSub.con_com_sub = rospy.Subscriber(ConComSub.controller_commands_topic, Controller_Commands, ConComSub.callback_ConCom)
 
     @staticmethod
     def getConComTopic():
