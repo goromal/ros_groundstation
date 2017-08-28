@@ -1,4 +1,4 @@
-<maps default="Kawasaki Field">
+<maps default="Brigham Young University">
 	<!--
     <map name="Map Name For Menu">
         <lat>Latitude Float (N+, S-)</lat>
@@ -6,25 +6,25 @@
         <zoom>How Much Map Zooms (int)</zoom>
     </map>
     -->
-	<!--<map name="Brigham Young University">
+	<map name="Brigham Young University">
 		<lat>40.2518</lat>
 		<lon>-111.6493</lon>
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
 	</map>
-	<map name="Elberta">
+	<!--<map name="Elberta">
 		<lat>39.9764</lat>
 		<lon>-111.9582</lon>
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
-	</map>-->
+	</map>
 	<map name="Kawasaki Field">
 		<lat>40.174571</lat>
 		<lon>-111.651641</lon>
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
 	</map>
-	<!--<map name="Naval Base Competition">
+	<map name="Naval Base Competition">
 		<lat>38.146191</lat>
 		<lon>-76.429454</lon>
 		<zoom>18</zoom>

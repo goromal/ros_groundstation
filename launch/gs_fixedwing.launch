@@ -1,0 +1,6 @@
+<launch>
+
+  <rosparam command="load" file="$(find ros_groundstation)/params/fixedwing_topics.yaml"/>
+  <node name="ground_station" pkg="ros_groundstation" type="ros_groundstation" output="screen"/>
+
+</launch>
