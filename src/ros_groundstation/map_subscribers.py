@@ -95,7 +95,6 @@ class StateSub():
             StateSub.Va = state.Va
             StateSub.phi = state.phi
             StateSub.theta = state.theta
-            StateSub.psi = state.psi
             StateSub.enabled = True
 
     @staticmethod

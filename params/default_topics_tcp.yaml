@@ -1,0 +1,30 @@
+stateSubChecked: true
+stateSubTopic: telem/state_light
+
+gpsInitSubChecked: true
+gpsInitSubTopic: telem/state_light
+
+pathSubChecked: true
+pathSubTopic: telem/current_path
+
+waypointSubChecked: true
+waypointSubTopic: telem/waypoint_path
+
+waypointPubChecked: false
+waypointPubTopic: telem/waypoint_path
+
+rcRawSubChecked: true
+rcRawSubTopic: telem/rc_raw
+rcRawChannel: 6
+
+gpsDataSubChecked: true
+gpsDataSubTopic: telem/gps/data
+
+controllerInternalsSubChecked: true
+controllerInternalsSubTopic: telem/controller_inners
+
+controllerCommandsSubChecked: true
+controllerCommandsSubTopic: telem/controller_commands
+
+obstacleSubChecked: false
+obstacleSubTopic: /obstacles_out
