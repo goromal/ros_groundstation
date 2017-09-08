@@ -6,7 +6,7 @@ from math import fmod, pi
 
 # custom messages
 from rosflight_msgs.msg import GPS, RCRaw
-from rosplane_msgs.msg import Current_Path, Waypoint, State, Controller_Internals, Controller_Commands
+from rosplane_msgs.msg import Current_Path, Waypoint, State_Lite, Controller_Internals, Controller_Commands
 
 class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
     init_latlonalt = [0.0, 0.0, 0.0]
@@ -39,7 +39,7 @@ class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
         InitSub.reset()
         InitSub.with_init = True
         InitSub.gps_init_topic = new_topic
-        InitSub.gi_sub = rospy.Subscriber(InitSub.gps_init_topic, State, InitSub.state_callback)
+        InitSub.gi_sub = rospy.Subscriber(InitSub.gps_init_topic, State_Lite, InitSub.state_callback)
 
     @staticmethod
     def getGPSInitTopic():
@@ -77,7 +77,7 @@ class StateSub():
         StateSub.reset()
         StateSub.state_topic = new_state_topic
         if not StateSub.state_topic is None:
-            StateSub.state_sub = rospy.Subscriber(StateSub.state_topic, State, StateSub.state_callback)
+            StateSub.state_sub = rospy.Subscriber(StateSub.state_topic, State_Lite, StateSub.state_callback)
 
     @staticmethod
     def getStateTopic():
