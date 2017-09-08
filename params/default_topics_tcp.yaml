@@ -1,8 +1,8 @@
 stateSubChecked: true
-stateSubTopic: telem/state_light
+stateSubTopic: telem/state_lite
 
 gpsInitSubChecked: true
-gpsInitSubTopic: telem/state_light
+gpsInitSubTopic: telem/state_lite
 
 pathSubChecked: true
 pathSubTopic: telem/current_path
