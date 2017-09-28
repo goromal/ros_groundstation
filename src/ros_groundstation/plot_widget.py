@@ -110,11 +110,20 @@ class PlotWidget(QWidget):
         # Available ros topics for plotting
         # keys are i=InitSub, s=StateSub, r=RCSub, p=PathSub, w=WaypointSub,
         #          o=ObstacleSub, g=GPSDataSub, ci=ConInSub, cc=ConComSub
+        '''
         self.message_dict = {
             'Course angle vs. Commanded':[('cc','chi_c'),('s','chi')],
             'Roll angle vs. Commanded':[('ci','phi_c'),('s','phi')],
             'Pitch angle vs. Commanded':[('s','theta'),('ci','theta_c')],
             'Airspeed vs. Commanded':[('s','Va'),('cc','Va_c')]
+            }
+        '''
+        self.message_dict = {
+            'Yaw angle':[('s','chi')],
+            'Roll angle':[('s','phi')],
+            'Pitch angle':[('s','theta')],
+            'Altitude':[('s','alt')],
+            'Airspeed':[('s','Va')]
             }
 
         # # Available ros topics for plotting

@@ -2,7 +2,7 @@
 
   <arg name="bag_name" default="flight"/>
 
-  <arg name="bag_path" default="/home/andrew/Research/groundstation_ws/bags"/>
+  <arg name="bag_path" default="$(find estimator_tools)/bags"/>
 
   <rosparam command="load" file="$(find ros_groundstation)/params/default_topics.yaml"/>
   <node name="ground_station" pkg="ros_groundstation" type="ros_groundstation" output="screen"/>

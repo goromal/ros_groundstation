@@ -50,7 +50,7 @@ class OpWindow(QWidget):
         self.handle_statesub_checkbox(checked)
         pubsub_layout.addWidget(self.NEDwGPS_statesub_textedit)
         layout.addLayout(pubsub_layout)
-
+        '''
         label = 'Path Subscriber'
         checked = rospy.get_param('pathSubChecked', True)
         topic = rospy.get_param('pathSubTopic', '/current_path')
@@ -89,14 +89,14 @@ class OpWindow(QWidget):
         self.handle_wppub_checkbox(checked)
         pubsub_layout.addWidget(self.NEDwGPS_wppub_textedit)
         layout.addLayout(pubsub_layout)
-
+        '''
         self.NEDwGPS_tab.setLayout(layout)
 
         # Parse misc_defaults ====================================================================
         self.MD_tab = QWidget()
         self.tab_widget.addTab(self.MD_tab, QString('Miscellaneous'))
         layout = QVBoxLayout()
-
+        '''
         label = 'RC Raw Subscriber'
         checked = rospy.get_param('rcRawSubChecked', True)
         topic = rospy.get_param('rcRawSubTopic', '/rc_raw')
@@ -124,7 +124,7 @@ class OpWindow(QWidget):
         channel_layout.addWidget(self.MD_rcsub_channel)
         pubsub_layout.addLayout(channel_layout)
         layout.addLayout(pubsub_layout)
-
+        '''
         label = 'GPS Data Subscriber'
         checked = rospy.get_param('gpsDataSubChecked', True)
         topic = rospy.get_param('gpsDataSubTopic', '/gps/data')
@@ -137,7 +137,7 @@ class OpWindow(QWidget):
         self.handle_gpssub_checkbox(checked)
         pubsub_layout.addWidget(self.MD_gpssub_textedit)
         layout.addLayout(pubsub_layout)
-
+        '''
         label = 'Controller Internals Subscriber'
         checked = rospy.get_param('controllerInternalsSubChecked', True)
         topic = rospy.get_param('controllerInternalsSubTopic', '/controller_inners')
@@ -176,7 +176,7 @@ class OpWindow(QWidget):
         self.handle_obssub_checkbox(checked)
         pubsub_layout.addWidget(self.MD_obssub_textedit)
         layout.addLayout(pubsub_layout)
-
+        '''
         self.MD_tab.setLayout(layout)
 
     def handle_statesub_checkbox(self, state_integer):
@@ -194,7 +194,7 @@ class OpWindow(QWidget):
             InitSub.updateGPSInitTopic(topic_name)
         else:
             InitSub.updateInitLatLonAlt(self.marble.latlonalt)
-
+    '''
     def handle_pathsub_checkbox(self, state_integer):
         checked = state_integer
         topic_name = str(self.NEDwGPS_pathsub_textedit.toPlainText())
@@ -218,7 +218,7 @@ class OpWindow(QWidget):
             print 'functionality pending'
         else:
             print 'functionality pending'
-
+    '''
     def handle_gpssub_checkbox(self, state_integer):
         checked = state_integer
         topic_name = str(self.MD_gpssub_textedit.toPlainText())
@@ -226,7 +226,7 @@ class OpWindow(QWidget):
             GPSDataSub.updateGPSDataTopic(topic_name)
         else:
             GPSDataSub.closeSubscriber()
-
+    '''
     def handle_obssub_checkbox(self, state_integer):
         checked = state_integer
         topic_name = str(self.MD_obssub_textedit.toPlainText())
@@ -261,3 +261,4 @@ class OpWindow(QWidget):
 
     def update_rc_channel(self, new_index):
         RCSub.updateRCChannel(int(new_index))
+    '''

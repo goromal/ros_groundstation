@@ -1,4 +1,4 @@
-<maps default="Brigham Young University">
+<maps default="Rock Canyon Park">
 	<!--
     <map name="Map Name For Menu">
         <lat>Latitude Float (N+, S-)</lat>
@@ -35,11 +35,11 @@
 		<lon>-111.9019</lon>
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
-	</map>
+	</map>-->
 	<map name="Rock Canyon Park">
 		<lat>40.2678966681</lat>
 		<lon>-111.634524573</lon>
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
-	</map>-->
+	</map>
 </maps>

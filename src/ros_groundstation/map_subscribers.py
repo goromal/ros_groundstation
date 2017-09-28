@@ -2,11 +2,13 @@ import rospy
 from std_msgs.msg import String
 import json, re
 from .Geo import Geobase
-from math import fmod, pi
+from math import fmod, pi, sqrt
+import tf
 
 # custom messages
 from rosflight_msgs.msg import GPS, RCRaw
-from rosplane_msgs.msg import Current_Path, Waypoint, State, Controller_Internals, Controller_Commands
+from nav_msgs.msg import Odometry
+#from rosplane_msgs.msg import Current_Path, Waypoint, State, Controller_Internals, Controller_Commands
 
 class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
     init_latlonalt = [0.0, 0.0, 0.0]
@@ -26,9 +28,9 @@ class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
 
     @staticmethod
     def state_callback(state):
-        InitSub.init_latlonalt[0] = state.initial_lat
-        InitSub.init_latlonalt[1] = state.initial_lon
-        InitSub.init_latlonalt[2] = state.initial_alt
+        InitSub.init_latlonalt[0] = state.latitude
+        InitSub.init_latlonalt[1] = state.longitude
+        InitSub.init_latlonalt[2] = state.altitude
         InitSub.GB = Geobase(InitSub.init_latlonalt[0], InitSub.init_latlonalt[1])
         InitSub.enabled = True # only perform the calculations if GPS init received
         InitSub.gi_sub.unregister()
@@ -39,7 +41,7 @@ class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
         InitSub.reset()
         InitSub.with_init = True
         InitSub.gps_init_topic = new_topic
-        InitSub.gi_sub = rospy.Subscriber(InitSub.gps_init_topic, State, InitSub.state_callback)
+        InitSub.gi_sub = rospy.Subscriber(InitSub.gps_init_topic, GPS, InitSub.state_callback)
 
     @staticmethod
     def getGPSInitTopic():
@@ -77,7 +79,7 @@ class StateSub():
         StateSub.reset()
         StateSub.state_topic = new_state_topic
         if not StateSub.state_topic is None:
-            StateSub.state_sub = rospy.Subscriber(StateSub.state_topic, State, StateSub.state_callback)
+            StateSub.state_sub = rospy.Subscriber(StateSub.state_topic, Odometry, StateSub.state_callback)
 
     @staticmethod
     def getStateTopic():
@@ -86,15 +88,27 @@ class StateSub():
     @staticmethod
     def state_callback(state):
         if InitSub.enabled:
-            n = state.position[0]
-            e = state.position[1]
-            d = state.position[2]
+            n = state.pose.pose.position.x
+            e = state.pose.pose.position.y
+            d = state.pose.pose.position.z
             StateSub.lat, StateSub.lon, StateSub.alt = InitSub.GB.ned_to_gps(n, e, d)
-            #StateSub.alt -= InitSub.init_latlonalt[2]
-            StateSub.chi = fmod(state.chi, 2*pi)
-            StateSub.Va = state.Va
-            StateSub.phi = state.phi
-            StateSub.theta = state.theta
+
+            quaternion = (
+                state.pose.pose.orientation.x,
+                state.pose.pose.orientation.y,
+                state.pose.pose.orientation.z,
+                state.pose.pose.orientation.w)
+            euler = tf.transformations.euler_from_quaternion(quaternion)
+
+            StateSub.chi = euler[2] # yaw
+            StateSub.phi = euler[0] # roll
+            StateSub.theta = euler[1] # pitch
+
+            vx = state.twist.twist.linear.x
+            vy = state.twist.twist.linear.y
+            vz = state.twist.twist.linear.z
+            StateSub.Va = sqrt(vx**2 + vy**2 + vz**2)
+
             StateSub.enabled = True
 
     @staticmethod
@@ -116,7 +130,7 @@ class StateSub():
         if not StateSub.state_sub is None:
             StateSub.state_sub.unregister()
             StateSub.state_sub = None
-
+'''
 class RCSub():
     rc_sub = None
     rc_raw_topic = None
@@ -321,7 +335,7 @@ class ObstacleSub():
         if not ObstacleSub.obs_sub is None:
             ObstacleSub.obs_sub.unregister()
             ObstacleSub.obs_sub = None
-
+'''
 class GPSDataSub():
     gps_sub = None
     gps_data_topic = None
@@ -357,7 +371,7 @@ class GPSDataSub():
         if not GPSDataSub.gps_sub is None:
             GPSDataSub.gps_sub.unregister()
             GPSDataSub.gps_sub = None
-
+'''
 class ConInSub():
     con_in_sub = None
     controller_inners_topic = None
@@ -438,3 +452,4 @@ class ConComSub():
         if not ConComSub.con_com_sub is None:
             ConComSub.con_com_sub.unregister()
             ConComSub.con_com_sub = None
+'''

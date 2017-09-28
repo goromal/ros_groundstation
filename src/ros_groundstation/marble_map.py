@@ -35,8 +35,8 @@ class MarbleMap(QWidget):
         self.wheel_angle_thresh = 1*120
 
         # geometric items for drawing
-        self.plane_h = 30 # pixels
-        self.plane_w = 25 # pixels
+        self.copter_h = 30 # pixels
+        self.copter_w = 30 # pixels
 
         self.draw_gridlines = False
         self.grid_dist = 20 # meters
@@ -135,14 +135,14 @@ class MarbleMap(QWidget):
         painter.setPen(QPen(QBrush(Qt.blue), 2, Qt.SolidLine, Qt.RoundCap))
         painter.drawLine(self.GMP.width/2, self.GMP.height/2-8, self.GMP.width/2, self.GMP.height/2+8)
         painter.drawLine(self.GMP.width/2-8, self.GMP.height/2, self.GMP.width/2+8, self.GMP.height/2)
-        if WaypointSub.enabled:
-            self.draw_waypoints(painter)
-        if ObstacleSub.enabled:
-            self.draw_obstacles(painter)
-        if PathSub.enabled:
-            self.draw_currentpath(painter)
+        #if WaypointSub.enabled:
+        #    self.draw_waypoints(painter)
+        #if ObstacleSub.enabled:
+        #    self.draw_obstacles(painter)
+        #if PathSub.enabled:
+        #    self.draw_currentpath(painter)
         if StateSub.enabled:
-            self.draw_plane(painter)
+            self.draw_copter(painter)
 
         painter.end()
 
@@ -213,11 +213,14 @@ class MarbleMap(QWidget):
                 R_pix = R * 2**self.GMP.zoom / (156543.03392 * cos(radians(c[0])))
                 painter.drawEllipse(pt_c[0]-R_pix, pt_c[1]-R_pix, 2*R_pix, 2*R_pix)
 
-    def draw_plane(self, painter):
+    def draw_copter(self, painter):
+        '''
         if RCSub.autopilotEnabled:
             painter.setPen(QPen(QBrush(Qt.red), 5, Qt.SolidLine, Qt.RoundCap))
         else:
             painter.setPen(QPen(QBrush(Qt.cyan), 5, Qt.SolidLine, Qt.RoundCap))
+        '''
+        painter.setPen(QPen(QBrush(Qt.cyan), 5, Qt.SolidLine, Qt.RoundCap))
 
         x = self.lon_to_pix(StateSub.lon)
         y = self.lat_to_pix(StateSub.lat)
@@ -225,31 +228,45 @@ class MarbleMap(QWidget):
         if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
             #print 'plane at', x, y
             chi = StateSub.chi
+            rad = self.copter_h/5
 
-            pt_1_x = x + self.rotate_x(0, self.plane_h/2, chi)
-            pt_1_y = y - self.rotate_y(0, self.plane_h/2, chi)
-            pt_2_x = x + self.rotate_x(0, -self.plane_h/2, chi)
-            pt_2_y = y - self.rotate_y(0, -self.plane_h/2, chi)
-            pt_3_x = x
-            pt_3_y = y
-            pt_4_x = x + self.rotate_x(-self.plane_w/2, -self.plane_h/4, chi)
-            pt_4_y = y - self.rotate_y(-self.plane_w/2, -self.plane_h/4, chi)
-            pt_5_x = x + self.rotate_x(self.plane_w/2, -self.plane_h/4, chi)
-            pt_5_y = y - self.rotate_y(self.plane_w/2, -self.plane_h/4, chi)
-            pt_6_x = x + self.rotate_x(-self.plane_w/4, -2*self.plane_h/5, chi)
-            pt_6_y = y - self.rotate_y(-self.plane_w/4, -2*self.plane_h/5, chi)
-            pt_7_x = x + self.rotate_x(self.plane_w/4, -2*self.plane_h/5, chi)
-            pt_7_y = y - self.rotate_y(self.plane_w/4, -2*self.plane_h/5, chi)
+            pt_1_x = x
+            pt_1_y = y
+            pt_2_x = x + self.rotate_x(-self.copter_w/2, self.copter_h/2, chi)
+            pt_2_y = y - self.rotate_y(-self.copter_w/2, self.copter_h/2, chi)
+            pt_3_x = x + self.rotate_x(self.copter_w/2, self.copter_h/2, chi)
+            pt_3_y = y - self.rotate_y(self.copter_w/2, self.copter_h/2, chi)
+            pt_4_x = x + self.rotate_x(self.copter_w/2, -self.copter_h/2, chi)
+            pt_4_y = y - self.rotate_y(self.copter_w/2, -self.copter_h/2, chi)
+            pt_5_x = x + self.rotate_x(-self.copter_w/2, -self.copter_h/2, chi)
+            pt_5_y = y - self.rotate_y(-self.copter_w/2, -self.copter_h/2, chi)
+            pt_6_x = x + self.rotate_x(0, self.copter_h/2, chi)
+            pt_6_y = y - self.rotate_y(0, self.copter_h/2, chi)
+            pt_7_x = x + self.rotate_x(-self.copter_w/5, self.copter_h/3, chi)
+            pt_7_y = y - self.rotate_y(-self.copter_w/5, self.copter_h/3, chi)
+            pt_8_x = x + self.rotate_x(self.copter_w/5, self.copter_h/3, chi)
+            pt_8_y = y - self.rotate_y(self.copter_w/5, self.copter_h/3, chi)
 
-            painter.drawLine(pt_1_x, pt_1_y, pt_2_x, pt_2_y)
-            painter.drawLine(pt_3_x, pt_3_y, pt_4_x, pt_4_y)
+            painter.drawLine(pt_2_x, pt_2_y, pt_4_x, pt_4_y)
             painter.drawLine(pt_3_x, pt_3_y, pt_5_x, pt_5_y)
+            painter.drawEllipse(pt_2_x-rad, pt_2_y-rad, 2*rad, 2*rad)
+            painter.drawEllipse(pt_3_x-rad, pt_3_y-rad, 2*rad, 2*rad)
+            painter.drawEllipse(pt_4_x-rad, pt_4_y-rad, 2*rad, 2*rad)
+            painter.drawEllipse(pt_5_x-rad, pt_5_y-rad, 2*rad, 2*rad)
+            painter.setPen(QPen(QBrush(Qt.white), 5, Qt.SolidLine, Qt.RoundCap))
+            painter.drawLine(pt_1_x, pt_1_y, pt_6_x, pt_6_y)
             painter.drawLine(pt_6_x, pt_6_y, pt_7_x, pt_7_y)
+            painter.drawLine(pt_6_x, pt_6_y, pt_8_x, pt_8_y)
             painter.setPen(QPen(QBrush(Qt.black), 2.5, Qt.SolidLine, Qt.RoundCap))
-            painter.drawLine(pt_1_x, pt_1_y, pt_2_x, pt_2_y)
-            painter.drawLine(pt_3_x, pt_3_y, pt_4_x, pt_4_y)
+            painter.drawLine(pt_2_x, pt_2_y, pt_4_x, pt_4_y)
             painter.drawLine(pt_3_x, pt_3_y, pt_5_x, pt_5_y)
+            painter.drawLine(pt_1_x, pt_1_y, pt_6_x, pt_6_y)
             painter.drawLine(pt_6_x, pt_6_y, pt_7_x, pt_7_y)
+            painter.drawLine(pt_6_x, pt_6_y, pt_8_x, pt_8_y)
+            painter.drawEllipse(pt_2_x-rad, pt_2_y-rad, 2*rad, 2*rad)
+            painter.drawEllipse(pt_3_x-rad, pt_3_y-rad, 2*rad, 2*rad)
+            painter.drawEllipse(pt_4_x-rad, pt_4_y-rad, 2*rad, 2*rad)
+            painter.drawEllipse(pt_5_x-rad, pt_5_y-rad, 2*rad, 2*rad)
 
     def lon_to_pix(self, lon): # assuming origin at upper left
         return GoogleMapPlotter.rel_lon_to_rel_pix(self.GMP.west, lon, self.GMP.zoom)

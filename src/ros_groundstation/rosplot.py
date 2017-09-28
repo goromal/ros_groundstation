@@ -82,6 +82,8 @@ class ROSData(object):
                 self.timer.timeout.connect(self.state_theta_cb)
             elif topic_item == 'Va':
                 self.timer.timeout.connect(self.state_Va_cb)
+            elif topic_item == 'alt':
+                self.timer.timeout.connect(self.state_alt_cb)
         elif topic_code == 'ci':
             if topic_item == 'phi_c':
                 self.timer.timeout.connect(self.conin_phi_c_cb)
@@ -109,6 +111,10 @@ class ROSData(object):
     def state_theta_cb(self):
         self.buff_x.append(rospy.get_time() - self.start_time)
         self.buff_y.append(StateSub.theta)
+
+    def state_alt_cb(self):
+        self.buff_x.append(rospy.get_time() - self.start_time)
+        self.buff_y.append(StateSub.alt)
 
     def state_Va_cb(self):
         self.buff_x.append(rospy.get_time() - self.start_time)
