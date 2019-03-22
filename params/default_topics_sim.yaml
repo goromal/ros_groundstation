@@ -1,0 +1,30 @@
+stateSubChecked: true
+stateSubTopic: fixedwing/truth
+
+gpsInitSubChecked: false
+gpsInitSubTopic: gps
+
+pathSubChecked: true
+pathSubTopic: fixedwing/current_path
+
+waypointSubChecked: true
+waypointSubTopic: fixedwing/waypoint_path
+
+waypointPubChecked: false
+waypointPubTopic: waypoint_path
+
+rcRawSubChecked: true
+rcRawSubTopic: fixedwing/rc_raw
+rcRawChannel: 6
+
+gpsDataSubChecked: false
+gpsDataSubTopic: gps
+
+controllerInternalsSubChecked: true
+controllerInternalsSubTopic: fixedwing/controller_inners
+
+controllerCommandsSubChecked: true
+controllerCommandsSubTopic: fixedwing/controller_commands
+
+obstacleSubChecked: false
+obstacleSubTopic: obstacles

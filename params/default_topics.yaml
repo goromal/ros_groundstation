@@ -1,13 +1,13 @@
 stateSubChecked: true
 stateSubTopic: state
 
-gpsInitSubChecked: true
-gpsInitSubTopic: state
+gpsInitSubChecked: false
+gpsInitSubTopic: gps
 
-pathSubChecked: true
+pathSubChecked: false
 pathSubTopic: current_path
 
-waypointSubChecked: true
+waypointSubChecked: false
 waypointSubTopic: waypoint_path
 
 waypointPubChecked: false
@@ -18,7 +18,7 @@ rcRawSubTopic: rc_raw
 rcRawChannel: 6
 
 gpsDataSubChecked: true
-gpsDataSubTopic: gps/data
+gpsDataSubTopic: gps
 
 controllerInternalsSubChecked: true
 controllerInternalsSubTopic: controller_inners

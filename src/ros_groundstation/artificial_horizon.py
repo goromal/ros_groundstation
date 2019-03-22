@@ -160,8 +160,10 @@ class ArtificialHorizon(QtWidgets.QWidget):
         painter.drawPolygon(poly)
         painter.setPen(QPen(QBrush(QColor(255,255,0)), 2, Qt.SolidLine, Qt.RoundCap))
         rect = QRectF(p1,p4)
-        painter.drawText(rect,QtCore.Qt.AlignCenter,str(self.speed) + " kt")
-        painter.drawText(QPoint(5,(self.height-boxHeight)/2-5),"Airspeed (KIAS)")
+        # painter.drawText(rect,QtCore.Qt.AlignCenter,str(self.speed) + " kt")
+        # painter.drawText(QPoint(5,(self.height-boxHeight)/2-5),"Airspeed (KIAS)")
+        painter.drawText(rect,QtCore.Qt.AlignCenter,str(self.speed) + " m/s") # $$$$
+        painter.drawText(QPoint(5,(self.height-boxHeight)/2-5),"Airspeed") # $$$$
 
     def drawAltitudeIndicator(self, event, painter):
         boxWidth = self.width*0.13

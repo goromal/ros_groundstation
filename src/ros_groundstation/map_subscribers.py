@@ -5,10 +5,11 @@ from .Geo import Geobase
 from math import fmod, pi
 
 # custom messages
-from rosflight_msgs.msg import GPS, RCRaw
+from rosflight_msgs.msg import RCRaw #, GPS
+from inertial_sense.msg import GPS
 from rosplane_msgs.msg import Current_Path, Waypoint, State, Controller_Internals, Controller_Commands
 
-class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
+class InitSub():
     init_latlonalt = [0.0, 0.0, 0.0]
     with_init = False
     enabled = False
@@ -26,9 +27,9 @@ class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
 
     @staticmethod
     def state_callback(state):
-        InitSub.init_latlonalt[0] = state.initial_lat
-        InitSub.init_latlonalt[1] = state.initial_lon
-        InitSub.init_latlonalt[2] = state.initial_alt
+        InitSub.init_latlonalt[0] = state.latitude
+        InitSub.init_latlonalt[1] = state.longitude
+        InitSub.init_latlonalt[2] = state.altitude
         InitSub.GB = Geobase(InitSub.init_latlonalt[0], InitSub.init_latlonalt[1])
         InitSub.enabled = True # only perform the calculations if GPS init received
         InitSub.gi_sub.unregister()
@@ -39,7 +40,7 @@ class InitSub(): # could end up being taken from rosplane_msgs.msg: State ++++
         InitSub.reset()
         InitSub.with_init = True
         InitSub.gps_init_topic = new_topic
-        InitSub.gi_sub = rospy.Subscriber(InitSub.gps_init_topic, State, InitSub.state_callback)
+        InitSub.gi_sub = rospy.Subscriber(InitSub.gps_init_topic, GPS, InitSub.state_callback)
 
     @staticmethod
     def getGPSInitTopic():
@@ -121,7 +122,7 @@ class RCSub():
     rc_sub = None
     rc_raw_topic = None
     autopilotEnabled = True
-    channel = 5
+    channel = 6
 
     @staticmethod
     def updateRCRawTopic(new_rc_raw_topic):
@@ -142,7 +143,7 @@ class RCSub():
 
     @staticmethod
     def rc_callback(rcRaw):
-        RCSub.autopilotEnabled = (rcRaw.values[RCSub.channel-1] < 1700)
+        RCSub.autopilotEnabled = (rcRaw.values[RCSub.channel] < 950) # <<<<<
 
     @staticmethod
     def closeSubscriber():
@@ -342,7 +343,7 @@ class GPSDataSub():
 
     @staticmethod
     def callback_GPS(gps_data):
-        GPSDataSub.numSat = gps_data.NumSat
+        GPSDataSub.numSat = gps_data.num_sat
         GPSDataSub.enabled = True
 
     @staticmethod

@@ -1,10 +1,11 @@
 <launch>
 
-  <arg name="bag_name" default="flight"/>
+  <arg name="bag_name" default="flight_2019-02-02"/>
+  <arg name="bag_path" default="$(find ros_groundstation)/../../bags"/>
+  <arg name="topic_param_path"
+       default="$(find ros_groundstation)/params/default_topics.yaml"/>
 
-  <arg name="bag_path" default="/home/andrew/Research/groundstation_ws/bags"/>
-
-  <rosparam command="load" file="$(find ros_groundstation)/params/default_topics.yaml"/>
+  <rosparam command="load" file="$(arg topic_param_path)"/>
   <node name="ground_station" pkg="ros_groundstation" type="ros_groundstation" output="screen"/>
 
   <node pkg="rosbag" type="play" name="player" output="screen" args="-q --clock $(arg bag_path)/$(arg bag_name).bag"/>

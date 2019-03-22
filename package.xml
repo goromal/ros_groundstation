@@ -22,6 +22,7 @@
   <run_depend>tf</run_depend>
   <run_depend>rosplane_msgs</run_depend>
   <run_depend>rosflight_msgs</run_depend>
+  <run_depend>inertial_sense</run_depend>
 
   <export>
     <rqt_gui plugin="${prefix}/plugin.xml" />
