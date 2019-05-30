@@ -117,6 +117,9 @@ class MarbleMap(QWidget):
         else:
             self.draw_gridlines = False
 
+    def get_mission(self):
+        MissionSub.getMission()
+
     # =====================================================
     # ==================== FOR DRAWING ====================
     # =====================================================
@@ -135,19 +138,23 @@ class MarbleMap(QWidget):
         painter.setPen(QPen(QBrush(Qt.blue), 2, Qt.SolidLine, Qt.RoundCap))
         painter.drawLine(self.GMP.width/2, self.GMP.height/2-8, self.GMP.width/2, self.GMP.height/2+8)
         painter.drawLine(self.GMP.width/2-8, self.GMP.height/2, self.GMP.width/2+8, self.GMP.height/2)
-        if WaypointSub.enabled:
-            self.draw_waypoints(painter)
-        if ObstacleSub.enabled:
+        # if WaypointSub.enabled:
+        #     self.draw_waypoints(painter)
+        if MissionSub.enabled:
             self.draw_obstacles(painter)
-        if PathSub.enabled:
-            self.draw_currentpath(painter)
+            self.draw_boundaries(painter)
+        if PPSub.enabled:
+            self.draw_waypoints(painter)
+            self.draw_path(painter)
+        # if PathSub.enabled:
+        #     self.draw_currentpath(painter)
         if StateSub.enabled:
             self.draw_plane(painter)
 
         painter.end()
 
     # draws gridlines at 10-meter increments
-    def draw_grid(self, painter): # ++++++++++++++++++++++++++++++++++++
+    def draw_grid(self, painter):
         painter.fillRect(QRect(0, self.GMP.height - 20, self.GMP.width, self.GMP.height), Qt.white)
         painter.fillRect(QRect(0, 0, 50, self.GMP.height - 20), Qt.white)
         painter.setPen(QPen(QBrush(Qt.black), 1.5, Qt.SolidLine, Qt.RoundCap))
@@ -164,7 +171,6 @@ class MarbleMap(QWidget):
         y_min = int(y_min)
         y_max = y_min + int(self.GMP.height / pixels_per_dist) + 1
         y_min += 1
-        #print y_min, y_max
 
         for i, x_line in enumerate(range(x_min, x_max + 1)):
             x_coord = x_offset + i * pixels_per_dist
@@ -180,20 +186,44 @@ class MarbleMap(QWidget):
                 text_point = QPoint(5, y_coord - 7)
                 painter.drawText(text_point, QString('%d m' % (y_line * self.grid_dist)))
 
+    # def draw_waypoints(self, painter):
+    #     painter.setPen(QPen(QBrush(Qt.darkRed), 2.5, Qt.SolidLine, Qt.RoundCap))
+    #     # it can be assumed that all waypoints are converted to latlon if the sub is enabled
+    #     for waypoint in WaypointSub.waypoints:
+    #         x = self.lon_to_pix(waypoint.lon)
+    #         y = self.lat_to_pix(waypoint.lat)
+    #         if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
+    #             rad = 5
+    #             painter.drawEllipse(x-rad, y-rad, 2*rad, 2*rad)
+    #             if waypoint.chi_valid:
+    #                 painter.drawLine(x, y, x+2*rad*sin(waypoint.chi_d), y-2*rad*cos(waypoint.chi_d))
+
     def draw_waypoints(self, painter):
-        painter.setPen(QPen(QBrush(Qt.darkRed), 2.5, Qt.SolidLine, Qt.RoundCap))
-        # it can be assumed that all waypoints are converted to latlon if the sub is enabled
-        for waypoint in WaypointSub.waypoints:
-            x = self.lon_to_pix(waypoint.lon)
-            y = self.lat_to_pix(waypoint.lat)
-            if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
-                rad = 5
-                painter.drawEllipse(x-rad, y-rad, 2*rad, 2*rad)
-                if waypoint.chi_valid:
-                    painter.drawLine(x, y, x+2*rad*sin(waypoint.chi_d), y-2*rad*cos(waypoint.chi_d))
+        pass # ++++++++++++++++++++++++++++++++++++++++++++
+
+    def draw_path(self, painter):
+        pass # ++++++++++++++++++++++++++++++++++++++++++++
 
     def draw_obstacles(self, painter):
-        pass # ++++++++++++++++++++++++++++++++++++++++++
+        painter.setPen(QPen(QBrush(Qt.yellow), 2.5, Qt.SolidLine, Qt.RoundCap))
+        for idx in range(len(MissionSub.obstacles)):
+            pt = MissionSub.obstacles[idx]
+            ul_x = self.lon_to_pix(pt[1])
+            ul_y = self.lat_to_pix(pt[0])
+            lr_x = self.lon_to_pix(pt[3])
+            lr_y = self.lat_to_pix(pt[2])
+            painter.drawEllipse(ul_x, ul_y, lr_x-ul_x, lr_y-ul_y)
+
+    def draw_boundaries(self, painter):
+        painter.setPen(QPen(QBrush(Qt.yellow), 2.5, Qt.SolidLine, Qt.RoundCap))
+        for idx in range(len(MissionSub.boundaries)-1):
+            pt1 = MissionSub.boundaries[idx]
+            pt2 = MissionSub.boundaries[idx+1]
+            x1 = self.lon_to_pix(pt1[1])
+            y1 = self.lat_to_pix(pt1[0])
+            x2 = self.lon_to_pix(pt2[1])
+            y2 = self.lat_to_pix(pt2[0])
+            painter.drawLine(x1, y1, x2, y2)
 
     def draw_currentpath(self, painter):
         painter.setPen(QPen(QBrush(Qt.red), 3.5, Qt.SolidLine, Qt.RoundCap))

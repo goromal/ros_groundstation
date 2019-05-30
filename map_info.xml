@@ -1,4 +1,4 @@
-<maps default="Brigham Young University">
+<maps default="Rock Canyon Park">
 	<!--
     <map name="Map Name For Menu">
         <lat>Latitude Float (N+, S-)</lat>
@@ -17,19 +17,19 @@
 		<lon>-111.9582</lon>
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
-	</map>
+	</map>-->
 	<map name="Kawasaki Field">
 		<lat>40.174571</lat>
 		<lon>-111.651641</lon>
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
-	</map>
+	</map><!--
 	<map name="Naval Base Competition">
 		<lat>38.146191</lat>
 		<lon>-76.429454</lon>
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
-	</map>
+	</map>-->
 	<map name="Utah County Airfield">
 		<lat>40.3634</lat>
 		<lon>-111.9019</lon>
@@ -42,5 +42,4 @@
 		<zoom>18</zoom>
 		<radius_m>1000</radius_m>
 	</map>
-	-->
 </maps>

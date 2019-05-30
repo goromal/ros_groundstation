@@ -2,6 +2,7 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
 
 from .marble_map import MarbleMap
+from .ct_window import CtWindow
 from .op_window import OpWindow
 import map_info_parser
 import os
@@ -12,7 +13,7 @@ from PyQt5.QtCore import *
 PWD = os.path.dirname(os.path.abspath(__file__))
 
 class MapWindow(QWidget):
-    def __init__(self, uifname = 'map_widget.ui'):
+    def __init__(self, uifname = 'map_widget_TEMPDEVEL.ui'):
         super(MapWindow, self).__init__()
         button_icon_file = os.path.join(PWD, 'resources', 'airplane.png')
         ui_file = os.path.join(PWD, 'resources', uifname)
@@ -33,12 +34,21 @@ class MapWindow(QWidget):
 
         self._gridview_toggle.stateChanged[int].connect(self._marble_map.grid_viewer_toggle)
 
+        self.init_ct_window()
         self.init_op_window()
         self._recenter.clicked.connect(self._marble_map.recenter)
+        self._get_mission.clicked.connect(self._marble_map.get_mission)
+
+    def init_ct_window(self):
+        self.ctWindow = CtWindow()
+        self._create_task.clicked.connect(self.open_ct_window)
 
     def init_op_window(self):
         self.opWindow = OpWindow(self._marble_map)
         self._map_options.clicked.connect(self.open_op_window)
+
+    def open_ct_window(self):
+        self.ctWindow.show()
 
     def open_op_window(self):
         self.opWindow.show()

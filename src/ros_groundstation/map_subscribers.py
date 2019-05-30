@@ -8,6 +8,8 @@ from math import fmod, pi
 from rosflight_msgs.msg import RCRaw #, GPS
 from inertial_sense.msg import GPS
 from rosplane_msgs.msg import Current_Path, Waypoint, State, Controller_Internals, Controller_Commands
+from uav_msgs.msg import JudgeMission, NED_list, Point, OrderedPoint
+from uav_msgs.srv import GetMissionWithId, PlanMissionPoints
 
 class InitSub():
     init_latlonalt = [0.0, 0.0, 0.0]
@@ -58,6 +60,48 @@ class InitSub():
         if not InitSub.gi_sub is None:
             InitSub.gi_sub.unregister()
             InitSub.gi_sub = None
+
+class MissionSub():
+    enabled = False
+    boundaries = []
+    obstacles = []
+    mission_proxy = rospy.ServiceProxy('get_mission_with_id', GetMissionWithId)
+    @staticmethod
+    def getMission():
+        MissionSub.enabled = False
+        MissionSub.boundaries = []
+        MissionSub.obstacles = []
+        try:
+            response = MissionSub.mission_proxy(0)
+            for boundary in response.mission.boundaries:
+                lat = boundary.point.latitude
+                lon = boundary.point.longitude
+                MissionSub.boundaries.append([lat, lon])
+            MissionSub.boundaries.append(MissionSub.boundaries[0])
+            for obstacle in response.mission.stationary_obstacles:
+                lat = obstacle.point.latitude
+                lon = obstacle.point.longitude
+                rad = obstacle.cylinder_radius
+                N, E, D = InitSub.GB.gps_to_ned(lat, lon)
+                lat_ul, lon_ul, alt_ul = InitSub.GB.ned_to_gps(N+rad,E-rad,D)
+                lat_lr, lon_lr, alt_lr = InitSub.GB.ned_to_gps(N-rad,E+rad,D)
+                MissionSub.obstacles.append([lat_ul, lon_ul, lat_lr, lon_lr])
+            MissionSub.enabled = True
+        except:
+            return
+
+# "POINTS AND PATHS" Subscriber
+class PPSub():
+    enabled = False
+    base_wps = []
+    path_wps = []
+    approved = False
+    mission_type = 0
+    base_wps_proxy = rospy.ServiceProxy('plan_mission', PlanMissionPoints)
+    path_wps_proxy = rospy.ServiceProxy('plan_path', PlanMissionPoints)
+    # +++++++++++++++++
+    # ++++ DONT FORGET THE FANCY PATH WAYPOINT ALGORITHM HERE! ++++
+    # +++++++++++++++++
 
 class StateSub():
     state_sub = None

@@ -32,7 +32,7 @@ class Geobase:
                 newValues.append(float(value))
         diction = Geodesic.WGS84.Inverse(self.origin[0], self.origin[1], newValues[0], newValues[1])
         solution = [diction['s12']*math.cos(math.radians(diction['azi1'])), diction['s12']*math.sin(math.radians(diction['azi1'])), -height]
-        return solution
+        return solution[0], solution[1], solution[2]
 
     #NED to GPS
     #Pre: north, east ,down are in meters
