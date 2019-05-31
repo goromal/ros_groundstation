@@ -56,7 +56,7 @@ class MapWindow(QWidget):
     def _update_home(self):
         self._marble_map.change_home(self._home_opts.currentText())
 
-    def closeEvent(self, event): # ++++++++++++++
+    def closeEvent(self, event):
         self.opWindow.close()
         self.wpWindow.close()
         self.cmWindow.close()

@@ -5,7 +5,7 @@ from .Geo import Geobase
 from math import fmod, pi
 
 # custom messages
-from rosflight_msgs.msg import RCRaw #, GPS
+from rosflight_msgs.msg import RCRaw
 from inertial_sense.msg import GPS
 from rosplane_msgs.msg import Current_Path, Waypoint, State, Controller_Internals, Controller_Commands
 from uav_msgs.msg import JudgeMission, NED_list, Point, OrderedPoint
@@ -99,9 +99,52 @@ class PPSub():
     mission_type = 0
     base_wps_proxy = rospy.ServiceProxy('plan_mission', PlanMissionPoints)
     path_wps_proxy = rospy.ServiceProxy('plan_path', PlanMissionPoints)
-    # +++++++++++++++++
-    # ++++ DONT FORGET THE FANCY PATH WAYPOINT ALGORITHM HERE! ++++
-    # +++++++++++++++++
+
+    @staticmethod
+    def changeMissionType(type):
+        PPSub.enabled = False
+        PPSub.approved = False
+        PPSub.base_wps = []
+        PPSub.path_wps = []
+        PPSub.mission_type = type
+
+    @staticmethod
+    def getBaseWaypoints():
+        PPSub.enabled = False
+        PPSub.approved = False
+        PPSub.base_wps = []
+        PPSub.path_wps = []
+        try:
+            response = PPSub.base_wps_proxy(PPSub.mission_type)
+            for NED in response.planned_waypoints.waypoint_list:
+                lat, lon, alt = InitSub.GB.ned_to_gps(NED.N, NED.E, NED.D)
+                PPSub.base_wps.append([lat, lon])
+            PPSub.enabled = True
+        except:
+            return
+
+    @staticmethod
+    def getPath():
+        PPSub.approved = False
+        PPSub.path_wps = []
+        try:
+            response = PPSub.path_wps_proxy(PPSub.mission_type)
+            for NED in response.planned_waypoints.waypoint_list:
+                lat, lon, alt = InitSub.GB.ned_to_gps(NED.N, NED.E, NED.D)
+                PPSub.path_wps.append([lat, lon])
+            PPSub.enabled = True
+        except:
+            return
+
+    @staticmethod
+    def approvePath():
+        try:
+            ###### TODO: ADD APPROVAL SERVICE CALL HERE ######
+            print 'functionality pending...'
+            ##################################################
+            PPSub.approved = True
+        except:
+            return
 
 class StateSub():
     state_sub = None

@@ -16,4 +16,28 @@ class CtWindow(QWidget):
         loadUi(ui_file, self)
         self.setObjectName(uifname)
 
-# WHAT TO DO WHEN A PATH IS APPROVED???? ++++
+        self.mission_dict = {'Waypoint Mission': 0, 'Payload Mission': 1,
+                             'Search Mission': 2, 'Off-Axis Detection': 6,
+                             'Loiter Mission': 7} # MUST BE ASCENDING ORDER!
+
+        self.comboBox.setCurrentIndex(sorted(self.mission_dict.values()).index(PPSub.mission_type))
+        self.comboBox.currentIndexChanged[str].connect(self.change_mission)
+        self.bwp_button.clicked.connect(self.get_base_waypoints)
+        self.pwp_button.clicked.connect(self.get_path_waypoints)
+        self.awp_button.clicked.connect(self.approve_waypoints)
+
+    def change_mission(self):
+        mission_name = self.comboBox.currentText()
+        PPSub.changeMissionType(self.mission_dict[mission_name])
+
+    def get_base_waypoints(self):
+        PPSub.getBaseWaypoints()
+
+    def get_path_waypoints(self):
+        if len(PPSub.base_wps) == 0:
+            PPSub.getBaseWaypoints()
+        PPSub.getPath()
+
+    def approve_waypoints(self):
+        if len(PPSub.path_wps) > 0:
+            PPSub.approvePath()

@@ -199,10 +199,27 @@ class MarbleMap(QWidget):
     #                 painter.drawLine(x, y, x+2*rad*sin(waypoint.chi_d), y-2*rad*cos(waypoint.chi_d))
 
     def draw_waypoints(self, painter):
-        pass # ++++++++++++++++++++++++++++++++++++++++++++
+        painter.setPen(QPen(QBrush(Qt.green), 3.0, Qt.SolidLine, Qt.RoundCap))
+        for wp in PPSub.base_wps:
+            x = self.lon_to_pix(wp[1])
+            y = self.lat_to_pix(wp[0])
+            if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
+                painter.drawEllipse(x-5, y-5, 10, 10)
+
 
     def draw_path(self, painter):
-        pass # ++++++++++++++++++++++++++++++++++++++++++++
+        if PPSub.approved:
+            painter.setPen(QPen(QBrush(Qt.green), 2.0, Qt.SolidLine, Qt.RoundCap))
+        else:
+            painter.setPen(QPen(QBrush(Qt.magenta), 2.0, Qt.SolidLine, Qt.RoundCap))
+        for idx in range(len(PPSub.path_wps)-1):
+            pt1 = PPSub.path_wps[idx]
+            pt2 = PPSub.path_wps[idx+1]
+            x1 = self.lon_to_pix(pt1[1])
+            y1 = self.lat_to_pix(pt1[0])
+            x2 = self.lon_to_pix(pt2[1])
+            y2 = self.lat_to_pix(pt2[0])
+            painter.drawLine(x1, y1, x2, y2)
 
     def draw_obstacles(self, painter):
         painter.setPen(QPen(QBrush(Qt.yellow), 2.5, Qt.SolidLine, Qt.RoundCap))
