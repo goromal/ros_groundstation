@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>352</width>
-    <height>263</height>
+    <height>269</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -112,6 +112,21 @@
            </item>
            <item>
             <property name="text">
+             <string>OTHER</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Land</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Emergent</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
              <string>Off-Axis Detection</string>
             </property>
            </item>
@@ -173,13 +188,6 @@
             </size>
            </property>
           </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="bwp_button">
-           <property name="text">
-            <string>Get Base Waypoints</string>
-           </property>
-          </widget>
          </item>
          <item>
           <spacer name="horizontalSpacer_3">
@@ -258,20 +266,74 @@
          </item>
         </layout>
        </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>30</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
      </item>
      <item>
-      <spacer name="verticalSpacer">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Set Landing End</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Set Landing Direction</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_7">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Maximum</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>130</height>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="text">
+        <string>Reset Landing Waypoints</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_8">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Minimum</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>30</height>
         </size>
        </property>
       </spacer>

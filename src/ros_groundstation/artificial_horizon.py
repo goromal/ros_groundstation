@@ -41,8 +41,8 @@ class ArtificialHorizon(QtWidgets.QWidget):
         # extract relevant values here from subscribers
         self.roll = int (math.floor(StateSub.phi*(180.0/math.pi)))
         self.pitch = int (math.floor(StateSub.theta*(180.0/math.pi)))
-        self.speed = int (math.floor(StateSub.Va))
-        self.altitude = int (math.floor(StateSub.alt))
+        self.speed = int (math.floor(1.94384 * StateSub.Va))
+        self.altitude = int (math.floor(20 + StateSub.alt/3.281))
         self.heading = int (math.floor(StateSub.chi*(180.0/math.pi))) % 360
         self.numSat = GPSDataSub.numSat
 
@@ -160,10 +160,10 @@ class ArtificialHorizon(QtWidgets.QWidget):
         painter.drawPolygon(poly)
         painter.setPen(QPen(QBrush(QColor(255,255,0)), 2, Qt.SolidLine, Qt.RoundCap))
         rect = QRectF(p1,p4)
-        # painter.drawText(rect,QtCore.Qt.AlignCenter,str(self.speed) + " kt")
-        # painter.drawText(QPoint(5,(self.height-boxHeight)/2-5),"Airspeed (KIAS)")
-        painter.drawText(rect,QtCore.Qt.AlignCenter,str(self.speed) + " m/s") # $$$$
-        painter.drawText(QPoint(5,(self.height-boxHeight)/2-5),"Airspeed") # $$$$
+        painter.drawText(rect,QtCore.Qt.AlignCenter,str(self.speed) + " kt")
+        painter.drawText(QPoint(5,(self.height-boxHeight)/2-5),"Airspeed (KIAS)")
+        # painter.drawText(rect,QtCore.Qt.AlignCenter,str(self.speed) + " m/s") # $$$$
+        # painter.drawText(QPoint(5,(self.height-boxHeight)/2-5),"Airspeed") # $$$$
 
     def drawAltitudeIndicator(self, event, painter):
         boxWidth = self.width*0.13

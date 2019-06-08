@@ -40,7 +40,7 @@ class MapWindow(QWidget):
         self._get_mission.clicked.connect(self._marble_map.get_mission)
 
     def init_ct_window(self):
-        self.ctWindow = CtWindow()
+        self.ctWindow = CtWindow(self._marble_map)
         self._create_task.clicked.connect(self.open_ct_window)
 
     def init_op_window(self):

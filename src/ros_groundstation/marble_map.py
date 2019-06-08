@@ -8,7 +8,7 @@ import os.path
 from math import sin, cos, radians
 
 import map_info_parser
-from Signals import WP_Handler
+from Signals import WP_Handler #, AttentiveHandler
 from .Geo import Geobase
 from .map_subscribers import *
 
@@ -16,6 +16,9 @@ class MarbleMap(QWidget):
     def __init__(self, gps_dict, blankname, parent=None):
         super(MarbleMap, self).__init__() # QWidget constructor
         self.WPH = WP_Handler()
+        self.attentiveIDX = 0
+        # AttentiveHandler.attentiveActivated.connect(self.activateAttentive)
+        # AttentiveHandler.attentiveDeactivated.connect(self.deactivateAttentive)
 
         self._gps_dict = gps_dict
         self.blankname = blankname
@@ -40,6 +43,14 @@ class MarbleMap(QWidget):
 
         self.draw_gridlines = False
         self.grid_dist = 20 # meters
+
+    def activateAttentive(self, idx):
+        self.attentiveIDX = idx
+        self._mouse_attentive = True
+
+    def deactivateAttentive(self):
+        self.attentiveIDX = 0
+        self._mouse_attentive = False
 
     def change_home(self, map_name):
         self._home_map = map_name
@@ -101,8 +112,16 @@ class MarbleMap(QWidget):
 
     def mousePressEvent(self, QMouseEvent):
         if self._mouse_attentive:
-            print 'OUCH'
-            #self.WPH.emit_clicked(clicked_lat, clicked_lon)
+            clickPos = QMouseEvent.pos()
+            clickX = clickPos.x()
+            clickY = clickPos.y()
+            lon = GoogleMapPlotter.pix_to_rel_lon(self.GMP.west, clickX, self.GMP.zoom)
+            lat = GoogleMapPlotter.pix_to_rel_lat(self.GMP.north, clickY, self.GMP.zoom)
+            if self.attentiveIDX == 0:
+                PPSub.setFirstLandingWaypoint([lat, lon, 0.0])
+            elif self.attentiveIDX == 1:
+                PPSub.setSecondLandingWaypoint([lat, lon, 0.0])
+            self.deactivateAttentive()
         else:
             self.movement_offset = QMouseEvent.pos()
             self.setCursor(QCursor(Qt.ClosedHandCursor))
@@ -143,6 +162,7 @@ class MarbleMap(QWidget):
         if MissionSub.enabled:
             self.draw_obstacles(painter)
             self.draw_boundaries(painter)
+            self.draw_mission_waypoints(painter)
         if PPSub.enabled:
             self.draw_waypoints(painter)
             self.draw_path(painter)
@@ -198,14 +218,32 @@ class MarbleMap(QWidget):
     #             if waypoint.chi_valid:
     #                 painter.drawLine(x, y, x+2*rad*sin(waypoint.chi_d), y-2*rad*cos(waypoint.chi_d))
 
-    def draw_waypoints(self, painter):
+    def draw_mission_waypoints(self, painter):
         painter.setPen(QPen(QBrush(Qt.green), 3.0, Qt.SolidLine, Qt.RoundCap))
-        for wp in PPSub.base_wps:
+        for wp in MissionSub.waypoints:
+            x = self.lon_to_pix(wp[1])
+            y = self.lat_to_pix(wp[0])
+            # print x, y
+            if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
+                painter.drawEllipse(x-5, y-5, 10, 10)
+
+    def draw_waypoints(self, painter):
+        # Draw first waypoint
+        painter.setPen(QPen(QBrush(Qt.blue), 3.0, Qt.SolidLine, Qt.RoundCap))
+        wp = PPSub.land_wps[0]
+        if len(wp) > 0:
             x = self.lon_to_pix(wp[1])
             y = self.lat_to_pix(wp[0])
             if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
                 painter.drawEllipse(x-5, y-5, 10, 10)
-
+        # Draw second waypoint
+        painter.setPen(QPen(QBrush(Qt.cyan), 3.0, Qt.SolidLine, Qt.RoundCap))
+        wp = PPSub.land_wps[1]
+        if len(wp) > 0:
+            x = self.lon_to_pix(wp[1])
+            y = self.lat_to_pix(wp[0])
+            if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
+                painter.drawEllipse(x-5, y-5, 10, 10)
 
     def draw_path(self, painter):
         if PPSub.approved:

@@ -8,8 +8,8 @@ from math import fmod, pi
 from rosflight_msgs.msg import RCRaw
 from inertial_sense.msg import GPS
 from rosplane_msgs.msg import Current_Path, Waypoint, State, Controller_Internals, Controller_Commands
-from uav_msgs.msg import JudgeMission, NED_list, Point, OrderedPoint
-from uav_msgs.srv import GetMissionWithId, PlanMissionPoints
+from uav_msgs.msg import JudgeMission, NED_list, NED_pt, Point, OrderedPoint
+from uav_msgs.srv import GetMissionWithId, PlanMissionPoints, UploadPath
 
 class InitSub():
     init_latlonalt = [0.0, 0.0, 0.0]
@@ -65,70 +65,104 @@ class MissionSub():
     enabled = False
     boundaries = []
     obstacles = []
+    waypoints = []
     mission_proxy = rospy.ServiceProxy('get_mission_with_id', GetMissionWithId)
     @staticmethod
     def getMission():
         MissionSub.enabled = False
         MissionSub.boundaries = []
+        MissionSub.waypoints = []
         MissionSub.obstacles = []
-        try:
-            response = MissionSub.mission_proxy(0)
-            for boundary in response.mission.boundaries:
-                lat = boundary.point.latitude
-                lon = boundary.point.longitude
-                MissionSub.boundaries.append([lat, lon])
-            MissionSub.boundaries.append(MissionSub.boundaries[0])
-            for obstacle in response.mission.stationary_obstacles:
-                lat = obstacle.point.latitude
-                lon = obstacle.point.longitude
-                rad = obstacle.cylinder_radius
-                N, E, D = InitSub.GB.gps_to_ned(lat, lon)
-                lat_ul, lon_ul, alt_ul = InitSub.GB.ned_to_gps(N+rad,E-rad,D)
-                lat_lr, lon_lr, alt_lr = InitSub.GB.ned_to_gps(N-rad,E+rad,D)
-                MissionSub.obstacles.append([lat_ul, lon_ul, lat_lr, lon_lr])
-            MissionSub.enabled = True
-        except:
-            return
+        # try:
+        #     response = MissionSub.mission_proxy(0)
+        #     for waypoint in response.mission.waypoints:
+        #         lat = boundary.point.latitude
+        #         lon = boundary.point.longitude
+        #         MissionSub.waypoints.append([lat, lon])
+        #     for boundary in response.mission.boundaries:
+        #         lat = boundary.point.latitude
+        #         lon = boundary.point.longitude
+        #         MissionSub.boundaries.append([lat, lon])
+        #     MissionSub.boundaries.append(MissionSub.boundaries[0])
+        #     for obstacle in response.mission.stationary_obstacles:
+        #         lat = obstacle.point.latitude
+        #         lon = obstacle.point.longitude
+        #         rad = obstacle.cylinder_radius
+        #         N, E, D = InitSub.GB.gps_to_ned(lat, lon)
+        #         lat_ul, lon_ul, alt_ul = InitSub.GB.ned_to_gps(N+rad,E-rad,D)
+        #         lat_lr, lon_lr, alt_lr = InitSub.GB.ned_to_gps(N-rad,E+rad,D)
+        #         MissionSub.obstacles.append([lat_ul, lon_ul, lat_lr, lon_lr])
+        #     MissionSub.enabled = True
+        # except:
+        #     return
+        response = MissionSub.mission_proxy(0)
+        for waypoint in response.mission.waypoints:
+            lat = waypoint.point.latitude
+            lon = waypoint.point.longitude
+            MissionSub.waypoints.append([lat, lon])
+        for boundary in response.mission.boundaries:
+            lat = boundary.point.latitude
+            lon = boundary.point.longitude
+            MissionSub.boundaries.append([lat, lon])
+        MissionSub.boundaries.append(MissionSub.boundaries[0])
+        for obstacle in response.mission.stationary_obstacles:
+            lat = obstacle.point.latitude
+            lon = obstacle.point.longitude
+            rad = obstacle.cylinder_radius
+            N, E, D = InitSub.GB.gps_to_ned(lat, lon)
+            lat_ul, lon_ul, alt_ul = InitSub.GB.ned_to_gps(N+rad,E-rad,D)
+            lat_lr, lon_lr, alt_lr = InitSub.GB.ned_to_gps(N-rad,E+rad,D)
+            MissionSub.obstacles.append([lat_ul, lon_ul, lat_lr, lon_lr])
+        MissionSub.enabled = True
 
 # "POINTS AND PATHS" Subscriber
 class PPSub():
     enabled = False
-    base_wps = []
+    land_wps = [[],[]]
     path_wps = []
     approved = False
     mission_type = 0
-    base_wps_proxy = rospy.ServiceProxy('plan_mission', PlanMissionPoints)
+    approval_proxy = rospy.ServiceProxy('approved_path', UploadPath)
     path_wps_proxy = rospy.ServiceProxy('plan_path', PlanMissionPoints)
 
     @staticmethod
     def changeMissionType(type):
-        PPSub.enabled = False
+        # PPSub.enabled = False
         PPSub.approved = False
-        PPSub.base_wps = []
         PPSub.path_wps = []
         PPSub.mission_type = type
 
     @staticmethod
-    def getBaseWaypoints():
-        PPSub.enabled = False
-        PPSub.approved = False
-        PPSub.base_wps = []
-        PPSub.path_wps = []
-        try:
-            response = PPSub.base_wps_proxy(PPSub.mission_type)
-            for NED in response.planned_waypoints.waypoint_list:
-                lat, lon, alt = InitSub.GB.ned_to_gps(NED.N, NED.E, NED.D)
-                PPSub.base_wps.append([lat, lon])
-            PPSub.enabled = True
-        except:
-            return
+    def setFirstLandingWaypoint(waypoint):
+        PPSub.land_wps[0] = waypoint
+        PPSub.enabled = True
+
+    @staticmethod
+    def setSecondLandingWaypoint(waypoint):
+        PPSub.land_wps[1] = waypoint
+        PPSub.enabled = True
+
+    @staticmethod
+    def resetLandingWaypoints():
+        PPSub.land_wps = [[],[]]
 
     @staticmethod
     def getPath():
+        PPSub.enabled = False
         PPSub.approved = False
         PPSub.path_wps = []
         try:
-            response = PPSub.path_wps_proxy(PPSub.mission_type)
+            if PPSub.mission_type == 4 and len(PPSub.land_wps[0]) > 0 and len(PPSub.land_wps[1]) > 0:
+                wp1 = NED_pt()
+                wp1.N, wp1.E, wp1.D = InitSub.GB.gps_to_ned(PPSub.land_wps[0][0], PPSub.land_wps[0][1], PPSub.land_wps[0][2])
+                wp2 = NED_pt()
+                wp2.N, wp2.E, wp2.D = InitSub.GB.gps_to_ned(PPSub.land_wps[1][0], PPSub.land_wps[1][1], PPSub.land_wps[1][2])
+                landingList = NED_list()
+                landingList.waypoint_list.append(wp1)
+                landingList.waypoint_list.append(wp2)
+                response = PPSub.path_wps_proxy(PPSub.mission_type, landingList)
+            else:
+                response = PPSub.path_wps_proxy(PPSub.mission_type, NED_list())
             for NED in response.planned_waypoints.waypoint_list:
                 lat, lon, alt = InitSub.GB.ned_to_gps(NED.N, NED.E, NED.D)
                 PPSub.path_wps.append([lat, lon])
@@ -139,10 +173,7 @@ class PPSub():
     @staticmethod
     def approvePath():
         try:
-            ###### TODO: ADD APPROVAL SERVICE CALL HERE ######
-            print 'functionality pending...'
-            ##################################################
-            PPSub.approved = True
+            PPSub.approved = PPSub.approval_proxy()
         except:
             return
 
