@@ -73,47 +73,47 @@ class MissionSub():
         MissionSub.boundaries = []
         MissionSub.waypoints = []
         MissionSub.obstacles = []
-        # try:
-        #     response = MissionSub.mission_proxy(0)
-        #     for waypoint in response.mission.waypoints:
-        #         lat = boundary.point.latitude
-        #         lon = boundary.point.longitude
-        #         MissionSub.waypoints.append([lat, lon])
-        #     for boundary in response.mission.boundaries:
-        #         lat = boundary.point.latitude
-        #         lon = boundary.point.longitude
-        #         MissionSub.boundaries.append([lat, lon])
-        #     MissionSub.boundaries.append(MissionSub.boundaries[0])
-        #     for obstacle in response.mission.stationary_obstacles:
-        #         lat = obstacle.point.latitude
-        #         lon = obstacle.point.longitude
-        #         rad = obstacle.cylinder_radius
-        #         N, E, D = InitSub.GB.gps_to_ned(lat, lon)
-        #         lat_ul, lon_ul, alt_ul = InitSub.GB.ned_to_gps(N+rad,E-rad,D)
-        #         lat_lr, lon_lr, alt_lr = InitSub.GB.ned_to_gps(N-rad,E+rad,D)
-        #         MissionSub.obstacles.append([lat_ul, lon_ul, lat_lr, lon_lr])
-        #     MissionSub.enabled = True
-        # except:
-        #     return
-        response = MissionSub.mission_proxy(0)
-        for waypoint in response.mission.waypoints:
-            lat = waypoint.point.latitude
-            lon = waypoint.point.longitude
-            MissionSub.waypoints.append([lat, lon])
-        for boundary in response.mission.boundaries:
-            lat = boundary.point.latitude
-            lon = boundary.point.longitude
-            MissionSub.boundaries.append([lat, lon])
-        MissionSub.boundaries.append(MissionSub.boundaries[0])
-        for obstacle in response.mission.stationary_obstacles:
-            lat = obstacle.point.latitude
-            lon = obstacle.point.longitude
-            rad = obstacle.cylinder_radius
-            N, E, D = InitSub.GB.gps_to_ned(lat, lon)
-            lat_ul, lon_ul, alt_ul = InitSub.GB.ned_to_gps(N+rad,E-rad,D)
-            lat_lr, lon_lr, alt_lr = InitSub.GB.ned_to_gps(N-rad,E+rad,D)
-            MissionSub.obstacles.append([lat_ul, lon_ul, lat_lr, lon_lr])
-        MissionSub.enabled = True
+        try:
+            response = MissionSub.mission_proxy(0)
+            for waypoint in response.mission.waypoints:
+                lat = boundary.point.latitude
+                lon = boundary.point.longitude
+                MissionSub.waypoints.append([lat, lon])
+            for boundary in response.mission.boundaries:
+                lat = boundary.point.latitude
+                lon = boundary.point.longitude
+                MissionSub.boundaries.append([lat, lon])
+            MissionSub.boundaries.append(MissionSub.boundaries[0])
+            for obstacle in response.mission.stationary_obstacles:
+                lat = obstacle.point.latitude
+                lon = obstacle.point.longitude
+                rad = obstacle.cylinder_radius
+                N, E, D = InitSub.GB.gps_to_ned(lat, lon)
+                lat_ul, lon_ul, alt_ul = InitSub.GB.ned_to_gps(N+rad,E-rad,D)
+                lat_lr, lon_lr, alt_lr = InitSub.GB.ned_to_gps(N-rad,E+rad,D)
+                MissionSub.obstacles.append([lat_ul, lon_ul, lat_lr, lon_lr])
+            MissionSub.enabled = True
+        except:
+            return
+        # response = MissionSub.mission_proxy(0)
+        # for waypoint in response.mission.waypoints:
+        #     lat = waypoint.point.latitude
+        #     lon = waypoint.point.longitude
+        #     MissionSub.waypoints.append([lat, lon])
+        # for boundary in response.mission.boundaries:
+        #     lat = boundary.point.latitude
+        #     lon = boundary.point.longitude
+        #     MissionSub.boundaries.append([lat, lon])
+        # MissionSub.boundaries.append(MissionSub.boundaries[0])
+        # for obstacle in response.mission.stationary_obstacles:
+        #     lat = obstacle.point.latitude
+        #     lon = obstacle.point.longitude
+        #     rad = obstacle.cylinder_radius
+        #     N, E, D = InitSub.GB.gps_to_ned(lat, lon)
+        #     lat_ul, lon_ul, alt_ul = InitSub.GB.ned_to_gps(N+rad,E-rad,D)
+        #     lat_lr, lon_lr, alt_lr = InitSub.GB.ned_to_gps(N-rad,E+rad,D)
+        #     MissionSub.obstacles.append([lat_ul, lon_ul, lat_lr, lon_lr])
+        # MissionSub.enabled = True
 
 # "POINTS AND PATHS" Subscriber
 class PPSub():

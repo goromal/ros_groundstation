@@ -191,7 +191,7 @@ class ArtificialHorizon(QtWidgets.QWidget):
         painter.setPen(QPen(QBrush(QColor(0,0,0,0)), 2, Qt.SolidLine))
         painter.drawPolygon(poly)
         painter.setPen(QPen(QBrush(QColor(255,255,0)), 2, Qt.SolidLine))
-        text = str(self.altitude) + " m"
+        text = str(self.altitude) + " ft"
         rect = QRectF(p1,p4)
         painter.drawText(rect,QtCore.Qt.AlignCenter,text)
         painter.drawText(QPoint(self.width-boxWidth+5,(self.height-boxHeight)/2-5),"Altitude")
