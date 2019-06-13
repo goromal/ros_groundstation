@@ -122,6 +122,7 @@ class PPSub():
     path_wps = []
     approved = False
     mission_type = 0
+    clear_proxy = rospy.ServiceProxy('clear_wpts', UploadPath)
     approval_proxy = rospy.ServiceProxy('approved_path', UploadPath)
     path_wps_proxy = rospy.ServiceProxy('plan_path', PlanMissionPoints)
 
@@ -129,7 +130,7 @@ class PPSub():
     def changeMissionType(type):
         # PPSub.enabled = False
         PPSub.approved = False
-        PPSub.path_wps = []
+        # PPSub.path_wps = []
         PPSub.mission_type = type
 
     @staticmethod
@@ -147,10 +148,19 @@ class PPSub():
         PPSub.land_wps = [[],[]]
 
     @staticmethod
+    def clearAllWaypoints():
+        PPSub.path_wps = []
+        try:
+            cleared = PPSub.clear_proxy()
+            print 'Successfully cleared waypoints.'
+        except:
+            print 'Failed to clear waypoints.'
+
+    @staticmethod
     def getPath():
         PPSub.enabled = False
         PPSub.approved = False
-        PPSub.path_wps = []
+        # PPSub.path_wps = []
         try:
             if PPSub.mission_type == 4 and len(PPSub.land_wps[0]) > 0 and len(PPSub.land_wps[1]) > 0:
                 wp1 = NED_pt()

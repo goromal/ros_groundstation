@@ -30,6 +30,7 @@ class CtWindow(QWidget):
         self.pushButton_2.clicked.connect(self.handleLandingEndClicked)
         self.pushButton.clicked.connect(self.handleLandingDirectionClicked)
         self.pushButton_3.clicked.connect(self.handleResetLandingWaypointsClicked)
+        self.pushButton_4.clicked.connect(self.handleClearWaypointsClicked)
 
     def handleLandingEndClicked(self):
         if PPSub.mission_type == self.mission_dict['Land']:
@@ -45,6 +46,9 @@ class CtWindow(QWidget):
         PPSub.resetLandingWaypoints()
         self.marble.deactivateAttentive()
         # AttentiveHandler.emitAttentiveDeactivated()
+
+    def handleClearWaypointsClicked(self):
+        PPSub.clearAllWaypoints()
 
     def change_mission(self):
         mission_name = self.comboBox.currentText()
