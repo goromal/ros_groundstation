@@ -159,6 +159,8 @@ class MarbleMap(QWidget):
         painter.drawLine(self.GMP.width/2-8, self.GMP.height/2, self.GMP.width/2+8, self.GMP.height/2)
         # if WaypointSub.enabled:
         #     self.draw_waypoints(painter)
+        if PathSub.enabled:
+            self.draw_currentpath(painter)
         if MissionSub.enabled:
             self.draw_obstacles(painter)
             self.draw_boundaries(painter)
@@ -166,8 +168,6 @@ class MarbleMap(QWidget):
         if PPSub.enabled:
             self.draw_waypoints(painter)
             self.draw_path(painter)
-        # if PathSub.enabled:
-        #     self.draw_currentpath(painter)
         if StateSub.enabled:
             self.draw_plane(painter)
 
@@ -226,6 +226,13 @@ class MarbleMap(QWidget):
             # print x, y
             if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
                 painter.drawEllipse(x-5, y-5, 10, 10)
+        # draw current waypoint
+        wp = MissionSub.currentWaypoint
+        if len(wp) > 0:
+            x = self.lon_to_pix(wp[1])
+            y = self.lat_to_pix(wp[0])
+            if x >=0 and x <= self.GMP.width and y >= 0 and y <= self.GMP.height:
+                painter.drawEllipse(x-7.5, y-7.5, 15, 15)
 
     def draw_waypoints(self, painter):
         # Draw first waypoint
@@ -246,13 +253,53 @@ class MarbleMap(QWidget):
                 painter.drawEllipse(x-5, y-5, 10, 10)
 
     def draw_path(self, painter):
-        if PPSub.approved:
+        # DRAW PATH WAYPOINTS
+        if PPSub.path_approved:
             painter.setPen(QPen(QBrush(Qt.green), 2.0, Qt.SolidLine, Qt.RoundCap))
         else:
-            painter.setPen(QPen(QBrush(Qt.magenta), 2.0, Qt.SolidLine, Qt.RoundCap))
+            painter.setPen(QPen(QBrush(Qt.gray), 2.0, Qt.SolidLine, Qt.RoundCap))
         for idx in range(len(PPSub.path_wps)-1):
             pt1 = PPSub.path_wps[idx]
             pt2 = PPSub.path_wps[idx+1]
+            x1 = self.lon_to_pix(pt1[1])
+            y1 = self.lat_to_pix(pt1[0])
+            x2 = self.lon_to_pix(pt2[1])
+            y2 = self.lat_to_pix(pt2[0])
+            painter.drawLine(x1, y1, x2, y2)
+        # DRAW SEARCH WAYPOINTS
+        if PPSub.search_approved:
+            painter.setPen(QPen(QBrush(Qt.magenta), 2.0, Qt.SolidLine, Qt.RoundCap))
+        else:
+            painter.setPen(QPen(QBrush(Qt.gray), 2.0, Qt.SolidLine, Qt.RoundCap))
+        for idx in range(len(PPSub.search_wps)-1):
+            pt1 = PPSub.search_wps[idx]
+            pt2 = PPSub.search_wps[idx+1]
+            x1 = self.lon_to_pix(pt1[1])
+            y1 = self.lat_to_pix(pt1[0])
+            x2 = self.lon_to_pix(pt2[1])
+            y2 = self.lat_to_pix(pt2[0])
+            painter.drawLine(x1, y1, x2, y2)
+        # DRAW PAYLOAD WAYPOINTS
+        if PPSub.payload_approved:
+            painter.setPen(QPen(QBrush(Qt.blue), 2.0, Qt.SolidLine, Qt.RoundCap))
+        else:
+            painter.setPen(QPen(QBrush(Qt.gray), 2.0, Qt.SolidLine, Qt.RoundCap))
+        for idx in range(len(PPSub.payload_wps)-1):
+            pt1 = PPSub.payload_wps[idx]
+            pt2 = PPSub.payload_wps[idx+1]
+            x1 = self.lon_to_pix(pt1[1])
+            y1 = self.lat_to_pix(pt1[0])
+            x2 = self.lon_to_pix(pt2[1])
+            y2 = self.lat_to_pix(pt2[0])
+            painter.drawLine(x1, y1, x2, y2)
+        # DRAW LANDING WAYPOINTS
+        if PPSub.landing_approved:
+            painter.setPen(QPen(QBrush(Qt.cyan), 2.0, Qt.SolidLine, Qt.RoundCap))
+        else:
+            painter.setPen(QPen(QBrush(Qt.gray), 2.0, Qt.SolidLine, Qt.RoundCap))
+        for idx in range(len(PPSub.landing_wps)-1):
+            pt1 = PPSub.landing_wps[idx]
+            pt2 = PPSub.landing_wps[idx+1]
             x1 = self.lon_to_pix(pt1[1])
             y1 = self.lat_to_pix(pt1[0])
             x2 = self.lon_to_pix(pt2[1])

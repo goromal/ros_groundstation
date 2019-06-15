@@ -4,7 +4,7 @@ stateSubTopic: state
 gpsInitSubChecked: false
 gpsInitSubTopic: gps
 
-pathSubChecked: false
+pathSubChecked: true
 pathSubTopic: current_path
 
 waypointSubChecked: false

@@ -42,7 +42,7 @@ class ArtificialHorizon(QtWidgets.QWidget):
         self.roll = int (math.floor(StateSub.phi*(180.0/math.pi)))
         self.pitch = int (math.floor(StateSub.theta*(180.0/math.pi)))
         self.speed = int (math.floor(1.94384 * StateSub.Va))
-        self.altitude = int (math.floor(20 + StateSub.alt/3.281))
+        self.altitude = int (math.floor(20 + StateSub.alt*3.281))
         self.heading = int (math.floor(StateSub.chi*(180.0/math.pi))) % 360
         self.numSat = GPSDataSub.numSat
 
